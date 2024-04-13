@@ -55,20 +55,17 @@ std::string Message::get_username() const
 
 std::string Message::get_table() const
 {
-  // TODO: implement
-  return "";
+  return m_args[0]; //TODO: correct?
 }
 
 std::string Message::get_key() const
 {
-  // TODO: implement
-  return "";
+  return m_args[1];
 }
 
 std::string Message::get_value() const
 {
-  // TODO: implement
-  return "";
+  return m_args[0];
 }
 
 std::string Message::get_quoted_text() const
