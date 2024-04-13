@@ -27,7 +27,10 @@ Message::~Message()
 
 Message &Message::operator=( const Message &rhs )
 {
-  // TODO: implement
+  // TODO: double check
+  get_key() = rhs.get_key();
+  get_value() = rhs.get_value();
+
   return *this;
 }
 
@@ -43,8 +46,11 @@ void Message::set_message_type(MessageType message_type)
 
 std::string Message::get_username() const
 {
-  // TODO: implement
-  return "";
+/*   if (!(get_message_type() == MessageType::LOGIN && is_valid())) {
+    throw InvalidMessage;
+  } */
+
+  return m_args[0]; //TODO: correct?
 }
 
 std::string Message::get_table() const
