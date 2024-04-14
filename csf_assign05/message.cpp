@@ -88,6 +88,35 @@ void Message::push_arg( const std::string &arg )
 
 bool Message::is_valid() const
 {
-  if (get_message_type() == MessageType::LOGIN && )
+  // If a request that takes no arguments has an incorrect number of arguments
+  if      ((get_message_type() == MessageType::POP   || get_message_type() == MessageType::TOP || 
+            get_message_type() == MessageType::BEGIN || get_message_type() == MessageType::COMMIT ||
+            get_message_type() == MessageType::BYE) 
+            && (m_args.size() != 0)) {
+  
+  }
+
+  // If a request that takes one argument has an incorrect number of arguments
+  else if ((get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE || 
+            get_message_type() == MessageType::PUSH  || get_message_type() == MessageType::SET ||
+            get_message_type() == MessageType::GET) 
+            && (m_args.size() != 1)) {
+
+  }
+
+  // If a request that takes two arguments has an incorrect number of arguments
+  else if ((get_message_type() == MessageType::ADD || get_message_type() == MessageType::MUL || 
+            get_message_type() == MessageType::SUB || get_message_type() == MessageType::DIV) 
+            && (m_args.size() != 2)) {
+
+  }
+
+  // If the argument is an identifier with an incorrect form
+  else if ((get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE ||
+            get_message_type() == MessageType::SET   || get_message_type() == MessageType::GET) 
+            && !((m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z'))) {
+
+            
+  }
   return true;
 }
