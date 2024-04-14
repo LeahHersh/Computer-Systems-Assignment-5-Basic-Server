@@ -86,6 +86,7 @@ void Message::push_arg( const std::string &arg )
   m_args.push_back( arg );
 }
 
+/* Checks that Network Protocols are followed. Protocols are checked separately for readability. */
 bool Message::is_valid() const
 {
   // If a request that takes no arguments has an incorrect number of arguments
@@ -94,6 +95,7 @@ bool Message::is_valid() const
             get_message_type() == MessageType::BYE) 
             && (m_args.size() != 0)) {
   
+    return false;
   }
 
   // If a request that takes one argument has an incorrect number of arguments
@@ -102,6 +104,7 @@ bool Message::is_valid() const
             get_message_type() == MessageType::GET) 
             && (m_args.size() != 1)) {
 
+    return false;
   }
 
   // If a request that takes two arguments has an incorrect number of arguments
@@ -109,14 +112,29 @@ bool Message::is_valid() const
             get_message_type() == MessageType::SUB || get_message_type() == MessageType::DIV) 
             && (m_args.size() != 2)) {
 
+    return false;
   }
 
-  // If the argument is an identifier with an incorrect form
-  else if ((get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE ||
-            get_message_type() == MessageType::SET   || get_message_type() == MessageType::GET) 
-            && !((m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z'))) {
+  // If the argument is an identifier 
+  else if (get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE ||
+           get_message_type() == MessageType::SET   || get_message_type() == MessageType::GET) {
 
+    // and if the first character is not a letter
+    if (!(m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z')) {
+      return false;
+    }
+
+    // or the rest of the identifier contains an invalid character
+    int identifier_length = m_args[0].length();
+    for (int i = 1; i < identifier_length; i++) {
+
+      if (!(m_args[0].at(i) >= 'A' && m_args[0].at(i) <= 'Z') || (m_args[0].at(i) >= 'a' && m_args[0].at(i) <= 'z') ||
+           (m_args[0].at(i) >= '0' && m_args[0].at(i) <= '9') || m_args[0].at(i) == '_') {
+
+        return false;
+      }
+    }
             
-  }
   return true;
+}
 }
