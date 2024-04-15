@@ -101,8 +101,7 @@ bool Message::is_valid() const
 
   // If a request that takes one argument has an incorrect number of arguments
   else if ((get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE || 
-            get_message_type() == MessageType::PUSH  || get_message_type() == MessageType::SET ||
-            get_message_type() == MessageType::GET) 
+            get_message_type() == MessageType::PUSH) 
             && (m_args.size() != 1)) {
 
     return false;
@@ -110,7 +109,8 @@ bool Message::is_valid() const
 
   // If a request that takes two arguments has an incorrect number of arguments
   else if ((get_message_type() == MessageType::ADD || get_message_type() == MessageType::MUL || 
-            get_message_type() == MessageType::SUB || get_message_type() == MessageType::DIV) 
+            get_message_type() == MessageType::SUB || get_message_type() == MessageType::DIV ||
+            get_message_type() == MessageType::SET || get_message_type() == MessageType::GET) 
             && (m_args.size() != 2)) {
 
     return false;
