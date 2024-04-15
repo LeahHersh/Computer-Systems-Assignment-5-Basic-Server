@@ -121,7 +121,7 @@ bool Message::is_valid() const
            get_message_type() == MessageType::SET   || get_message_type() == MessageType::GET) {
 
     // and the first character is not a letter
-    if (!(m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z')) {
+    if (!((m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z'))) {
       return false;
     }
 
