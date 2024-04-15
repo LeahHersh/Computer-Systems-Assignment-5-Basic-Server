@@ -9,6 +9,7 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
 {
   MessageType m_type = msg.get_message_type();
   
+  // Add the request's name to the encoded message
   switch (m_type) {
 
   case MessageType::BEGIN: encoded_msg = "BEGIN\n";
@@ -42,11 +43,16 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
     break;
   }
 
+  // Add request arguments to the encoded message
   int num_args = msg.get_num_args();
   for (int i = 0; i < num_args; i++) {
     encoded_msg += " ";
     encoded_msg += msg.get_arg(i);
   }
+
+  // Add newline character
+  encoded_msg += "\n";
+
 }
 
 void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg )
