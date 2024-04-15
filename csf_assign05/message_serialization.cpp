@@ -9,7 +9,7 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
 {
   MessageType m_type = msg.get_message_type();
   
-  // Add the request's name to the encoded message
+  // Add the message's type to the encoded message
   switch (m_type) {
 
   case MessageType::BEGIN: encoded_msg = "BEGIN\n";
@@ -30,6 +30,12 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
     return;
   case MessageType::BYE: encoded_msg = "BYE\n";
     return;
+  case MessageType::OK: encoded_msg = "OK\n";
+    return;
+  case MessageType::FAILED: encoded_msg = "FAILED\n";
+    return;
+  case MessageType::ERROR: encoded_msg = "ERROR\n";
+    return;
 
   case MessageType::LOGIN: encoded_msg = "LOGIN";
     break;
@@ -41,9 +47,11 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
     break;
   case MessageType::GET: encoded_msg = "GET";
     break;
+  case MessageType::DATA: encoded_msg = "DATA";
+    break;
   }
 
-  // Add request arguments to the encoded message
+  // Add message arguments to the encoded message
   int num_args = msg.get_num_args();
   for (int i = 0; i < num_args; i++) {
     encoded_msg += " ";
