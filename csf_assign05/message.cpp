@@ -2,6 +2,7 @@
 #include <map>
 #include <regex>
 #include <cassert>
+#include <cctype>
 #include "message.h"
 
 Message::Message()
@@ -119,7 +120,7 @@ bool Message::is_valid() const
   else if (get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE ||
            get_message_type() == MessageType::SET   || get_message_type() == MessageType::GET) {
 
-    // and if the first character is not a letter
+    // and the first character is not a letter
     if (!(m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z')) {
       return false;
     }
@@ -134,7 +135,16 @@ bool Message::is_valid() const
         return false;
       }
     }
-            
+  }
+
+  // If the argument is a value
+  else if (get_message_type() == MessageType::PUSH) {
+
+    // and only contains white space
+    if (std::all_of(m_args[0].begin(),m_args[0].end(),isspace)) {
+      return false;
+    }
+  }
+
   return true;
-}
 }
