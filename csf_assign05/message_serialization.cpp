@@ -11,16 +11,31 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
   
   switch (m_type) {
 
+  case MessageType::BEGIN: encoded_msg = "BEGIN\n";
+    return;
+  case MessageType::COMMIT: encoded_msg = "COMMIT\n";
+    return;
+  case MessageType::POP: encoded_msg = "POP\n";
+    return;
+  case MessageType::TOP: encoded_msg = "TOP\n";
+    return;
+  case MessageType::ADD: encoded_msg = "ADD\n";
+    return;
+  case MessageType::SUB: encoded_msg = "SUB\n";
+    return;
+  case MessageType::MUL: encoded_msg = "MUL\n";
+    return;
+  case MessageType::DIV: encoded_msg = "DIV\n";
+    return;
+  case MessageType::BYE: encoded_msg = "BYE\n";
+    return;
+
   case MessageType::LOGIN: encoded_msg = "LOGIN";
     break;
   case MessageType::CREATE: encoded_msg = "CREATE";
     break;
   case MessageType::PUSH: encoded_msg = "PUSH";
     break;
-  case MessageType::POP: encoded_msg = "POP\n";
-    return;
-  case MessageType::TOP: encoded_msg = "TOP\n";
-    return;
   case MessageType::SET: encoded_msg = "SET";
     break;
   case MessageType::GET: encoded_msg = "GET";
