@@ -13,30 +13,29 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
   switch (m_type) {
 
   case MessageType::BEGIN: encoded_msg = "BEGIN\n";
-    return;
+    break;
   case MessageType::COMMIT: encoded_msg = "COMMIT\n";
-    return;
+    break;
   case MessageType::POP: encoded_msg = "POP\n";
-    return;
+    break;
   case MessageType::TOP: encoded_msg = "TOP\n";
-    return;
+    break;
   case MessageType::ADD: encoded_msg = "ADD\n";
-    return;
+    break;
   case MessageType::SUB: encoded_msg = "SUB\n";
-    return;
+    break;
   case MessageType::MUL: encoded_msg = "MUL\n";
-    return;
+    break;
   case MessageType::DIV: encoded_msg = "DIV\n";
-    return;
+    break;
   case MessageType::BYE: encoded_msg = "BYE\n";
-    return;
+    break;
   case MessageType::OK: encoded_msg = "OK\n";
-    return;
+    break;
   case MessageType::FAILED: encoded_msg = "FAILED\n";
-    return;
+    break;
   case MessageType::ERROR: encoded_msg = "ERROR\n";
-    return;
-
+    break;
   case MessageType::LOGIN: encoded_msg = "LOGIN";
     break;
   case MessageType::CREATE: encoded_msg = "CREATE";
@@ -61,6 +60,15 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
   // Add newline character
   encoded_msg += "\n";
 
+  // Check if the message is too long
+  check_message_size(encoded_msg);
+}
+
+void check_message_size(std::string encoded_msg) {
+
+  if (encoded_msg.length() > Message::MAX_ENCODED_LEN) {
+    throw InvalidMessage("Message is too long.");
+  }
 }
 
 void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg )
