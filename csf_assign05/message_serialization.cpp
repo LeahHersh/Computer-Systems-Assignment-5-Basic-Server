@@ -140,7 +140,11 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   // If the rest of the string is a quoted text, push it as the only argument
   if (msg.get_message_type() == MessageType::FAILED || msg.get_message_type() == MessageType::ERROR) {
     
+    std::string use_up_type;
+    ss >> use_up_type;
+
     std::string quoted_text = ss.str();
+
     msg.push_arg(quoted_text);
 
     return;
