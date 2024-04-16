@@ -133,12 +133,13 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   else if (m_type == "DATA") {
     msg.set_message_type(MessageType::DATA);
   }
-  
+
+  // Clear msg's arguments
+  msg.clear_args();
+
   // Set the decoded message's arguments
   std::string curr_arg;
   while(ss >> curr_arg) {
     msg.push_arg(curr_arg);
   }
-
-  ss.clear();
 }

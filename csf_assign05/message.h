@@ -58,6 +58,8 @@ public:
 
   void push_arg( const std::string &arg );
 
+  void clear_args() { m_args.clear(); };
+
   bool is_valid() const;
 
   unsigned get_num_args() const { return m_args.size(); }
