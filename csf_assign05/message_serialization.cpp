@@ -73,5 +73,69 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
 
 void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg )
 {
-  // TODO: implement
+  std::stringstream ss(encoded_msg_);
+  std::string m_type; 
+  ss >> m_type;
+
+  // Add the message's type to the decoded message
+  if (m_type == "BEGIN") {
+    msg.set_message_type(MessageType::BEGIN);
+  }
+  else if (m_type == "COMMIT") {
+    msg.set_message_type(MessageType::COMMIT);
+  }
+  else if (m_type == "POP") {
+    msg.set_message_type(MessageType::POP);
+  }
+  else if (m_type == "TOP") {
+    msg.set_message_type(MessageType::TOP);
+  }
+  else if (m_type == "ADD") {
+    msg.set_message_type(MessageType::ADD);
+  }
+  else if (m_type == "SUB") {
+    msg.set_message_type(MessageType::SUB);
+  }
+  else if (m_type == "MUL") {
+    msg.set_message_type(MessageType::MUL);
+  }
+  else if (m_type == "DIV") {
+    msg.set_message_type(MessageType::DIV);
+  }
+  else if (m_type == "BYE") {
+    msg.set_message_type(MessageType::BYE);
+  }
+  else if (m_type == "OK") {
+    msg.set_message_type(MessageType::OK);
+  }
+  else if (m_type == "FAILED") {
+    msg.set_message_type(MessageType::FAILED);
+  }
+  else if (m_type == "ERROR") {
+    msg.set_message_type(MessageType::ERROR);
+  }
+  else if (m_type == "LOGIN") {
+    msg.set_message_type(MessageType::LOGIN);
+  }
+  else if (m_type == "CREATE") {
+    msg.set_message_type(MessageType::CREATE);
+  }
+  else if (m_type == "PUSH") {
+    msg.set_message_type(MessageType::PUSH);
+  }
+  else if (m_type == "SET") {
+    msg.set_message_type(MessageType::SET);
+  }
+  else if (m_type == "GET") {
+    msg.set_message_type(MessageType::GET);
+  }
+  else if (m_type == "DATA") {
+    msg.set_message_type(MessageType::DATA);
+  }
+  
+  // Set the decoded message's arguments
+  std::string curr_arg;
+  while(ss >> curr_arg) {
+    msg.push_arg(curr_arg);
+  }
 }
