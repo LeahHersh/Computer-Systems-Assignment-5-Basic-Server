@@ -368,6 +368,7 @@ void test_message_serialization_decode( TestObjs *objs )
   MessageSerialization::decode( objs->encoded_failed_resp, msg );
   ASSERT( MessageType::FAILED == msg.get_message_type() );
   ASSERT( 1 == msg.get_num_args() );
+  std::cerr << msg.get_quoted_text();
   ASSERT( "Something went wrong, shucks!" == msg.get_quoted_text() );
 
   MessageSerialization::decode( objs->encoded_error_resp, msg );
