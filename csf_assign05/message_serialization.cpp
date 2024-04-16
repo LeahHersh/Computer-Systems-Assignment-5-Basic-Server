@@ -73,7 +73,9 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
 
 void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg )
 {
-  
+  check_message_size(encoded_msg_);
+
+  // Get the string containing the encoded message's type
   std::stringstream ss(encoded_msg_);
   std::string m_type; 
   ss >> m_type;
@@ -141,12 +143,20 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   if (msg.get_message_type() == MessageType::FAILED || msg.get_message_type() == MessageType::ERROR) {
 
     std::string quoted_text = ss.str();
+
+    if (quoted_text.back() != '\n') {
+      throw InvalidMessage("Message is missing a newline.");
+    }
+
     int open_quote_ind = quoted_text.find_first_of('"');
     int close_quote_ind = quoted_text.find_last_of('"');
 
     quoted_text = quoted_text.substr(open_quote_ind + 1, close_quote_ind - open_quote_ind - 1);
     msg.push_arg(quoted_text);
 
+    if (!msg.is_valid()) {
+      throw InvalidMessage("Message is not valid.");
+    }
     return;
   }
 
@@ -154,5 +164,9 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   std::string curr_arg;
   while(ss >> curr_arg) {
     msg.push_arg(curr_arg);
+  }
+
+  if (!msg.is_valid()) {
+    throw InvalidMessage("Message is not valid.");
   }
 }
