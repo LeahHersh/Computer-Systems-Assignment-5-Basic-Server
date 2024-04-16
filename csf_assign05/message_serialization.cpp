@@ -135,7 +135,7 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   
   // Set the decoded message's arguments
   std::string curr_arg;
-  while(ss >> curr_arg) {
+  while(ss >> curr_arg && curr_arg != "\n") {
     msg.push_arg(curr_arg);
   }
 }
