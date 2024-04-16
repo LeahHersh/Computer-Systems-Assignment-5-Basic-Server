@@ -19,29 +19,29 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
   // Add the message's type to the encoded message
   switch (m_type) {
 
-  case MessageType::BEGIN: encoded_msg = "BEGIN\n";
+  case MessageType::BEGIN: encoded_msg = "BEGIN";
     break;
-  case MessageType::COMMIT: encoded_msg = "COMMIT\n";
+  case MessageType::COMMIT: encoded_msg = "COMMIT";
     break;
   case MessageType::POP: encoded_msg = "POP";
     break;
-  case MessageType::TOP: encoded_msg = "TOP\n";
+  case MessageType::TOP: encoded_msg = "TOP";
     break;
-  case MessageType::ADD: encoded_msg = "ADD\n";
+  case MessageType::ADD: encoded_msg = "ADD";
     break;
-  case MessageType::SUB: encoded_msg = "SUB\n";
+  case MessageType::SUB: encoded_msg = "SUB";
     break;
-  case MessageType::MUL: encoded_msg = "MUL\n";
+  case MessageType::MUL: encoded_msg = "MUL";
     break;
-  case MessageType::DIV: encoded_msg = "DIV\n";
+  case MessageType::DIV: encoded_msg = "DIV";
     break;
-  case MessageType::BYE: encoded_msg = "BYE\n";
+  case MessageType::BYE: encoded_msg = "BYE";
     break;
-  case MessageType::OK: encoded_msg = "OK\n";
+  case MessageType::OK: encoded_msg = "OK";
     break;
-  case MessageType::FAILED: encoded_msg = "FAILED\n";
+  case MessageType::FAILED: encoded_msg = "FAILED";
     break;
-  case MessageType::ERROR: encoded_msg = "ERROR\n";
+  case MessageType::ERROR: encoded_msg = "ERROR";
     break;
   case MessageType::LOGIN: encoded_msg = "LOGIN";
     break;
