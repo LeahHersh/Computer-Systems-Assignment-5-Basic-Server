@@ -169,4 +169,9 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   if (!msg.is_valid()) {
     throw InvalidMessage("Message is not valid.");
   }
+
+  std::string left_over = ss.str();
+  if (left_over.back() != '\n') {
+    throw InvalidMessage("Message is missing a newline.");
+  }
 }
