@@ -6,6 +6,7 @@
 #include "value_stack.h"
 #include "exceptions.h"
 #include "tctest.h"
+#include "iostream"
 
 struct TestObjs
 {
@@ -350,6 +351,7 @@ void test_message_serialization_decode( TestObjs *objs )
 
   MessageSerialization::decode( objs->encoded_create_req, msg );
   ASSERT( MessageType::CREATE == msg.get_message_type() );
+  std::cerr << msg.get_num_args() << "\n";
   ASSERT( 1 == msg.get_num_args() );
   ASSERT( "invoices" == msg.get_table() );
 
