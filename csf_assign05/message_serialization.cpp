@@ -73,6 +73,7 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
 
 void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg )
 {
+  
   std::stringstream ss(encoded_msg_);
   std::string m_type; 
   ss >> m_type;
@@ -135,7 +136,9 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   
   // Set the decoded message's arguments
   std::string curr_arg;
-  while(ss >> curr_arg && curr_arg != "\n") {
+  while(ss >> curr_arg) {
     msg.push_arg(curr_arg);
   }
+
+  ss.clear();
 }

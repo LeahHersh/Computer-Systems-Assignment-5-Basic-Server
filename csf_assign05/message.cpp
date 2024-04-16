@@ -28,13 +28,14 @@ Message::~Message()
 
 Message &Message::operator=( const Message &rhs )
 {
+  m_message_type = rhs.get_message_type();
+  
   // Set up new m_args array that will hold rhs's args
   int num_args_rhs = rhs.get_num_args();
   std::vector<std::string> new_args;
   new_args.resize(num_args_rhs);
 
   // Set rhs's args to "this'" args
-  m_message_type = rhs.get_message_type();
   for (int i = 0; i < num_args_rhs; i++) {
     new_args[i] = rhs.get_arg(i);
   }
