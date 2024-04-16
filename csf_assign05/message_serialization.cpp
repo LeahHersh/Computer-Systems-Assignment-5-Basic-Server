@@ -23,7 +23,7 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
     break;
   case MessageType::COMMIT: encoded_msg = "COMMIT\n";
     break;
-  case MessageType::POP: encoded_msg = "POP\n";
+  case MessageType::POP: encoded_msg = "POP";
     break;
   case MessageType::TOP: encoded_msg = "TOP\n";
     break;
