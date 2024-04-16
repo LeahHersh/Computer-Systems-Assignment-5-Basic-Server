@@ -144,7 +144,7 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
     int open_quote_ind = quoted_text.find_first_of('"');
     int close_quote_ind = quoted_text.find_last_of('"');
 
-    quoted_text = quoted_text.substr(open_quote_ind, close_quote_ind - open_quote_ind);
+    quoted_text = quoted_text.substr(open_quote_ind + 1, close_quote_ind - open_quote_ind - 1);
     msg.push_arg(quoted_text);
 
     return;
