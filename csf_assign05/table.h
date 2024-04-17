@@ -8,7 +8,13 @@
 class Table {
 private:
   std::string m_name;
-  // TODO: add member variables
+  bool locked;
+
+  /* String keys are mapped to string values. */
+  std::unordered_map<std::string, std::string> key_value_pairs;
+
+  /* Map of a) proposed new table entries and b) entries with committed keys and proposed new values. */
+  std::unordered_map<std::string, std::string> proposed_pairs;
 
   // copy constructor and assignment operator are prohibited
   Table( const Table & );

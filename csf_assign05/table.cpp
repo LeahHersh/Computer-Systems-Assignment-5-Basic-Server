@@ -7,7 +7,7 @@ Table::Table( const std::string &name )
   : m_name( name )
   // TODO: initialize additional member variables
 {
-  // TODO: implement
+  locked = false;
 }
 
 Table::~Table()
@@ -32,25 +32,42 @@ bool Table::trylock()
 
 void Table::set( const std::string &key, const std::string &value )
 {
-  // TODO: implement
+  proposed_pairs[key] = value;
 }
 
 std::string Table::get( const std::string &key )
 {
-  // TODO: implement
+  // If the key is in the current table
+  if (key_value_pairs.find(key) != key_value_pairs.end()) {
+
+    return key_value_pairs.at(key);
+  } 
+  // If the key is in a proposed entry
+  else if (proposed_pairs.find(key) != proposed_pairs.end()) {
+
+    return proposed_pairs.at(key);
+  } 
+
 }
 
 bool Table::has_key( const std::string &key )
 {
-  // TODO: implement
+  if (key_value_pairs.find(key) != key_value_pairs.end() || proposed_pairs.find(key) != proposed_pairs.end()) {
+    return true;
+  }
+
+  return false;
 }
 
 void Table::commit_changes()
 {
-  // TODO: implement
+  // Add every entry in the map with new or edited table entries to the commited table
+  for (auto it : proposed_pairs) {
+    key_value_pairs[it.first] = it.second;
+  }
 }
 
 void Table::rollback_changes()
 {
-  // TODO: implement
+  key_value_pairs.clear();
 }
