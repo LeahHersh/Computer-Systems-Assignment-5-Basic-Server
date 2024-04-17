@@ -1,7 +1,7 @@
 #ifndef TABLE_H
 #define TABLE_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <pthread.h>
 
