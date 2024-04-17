@@ -4,11 +4,7 @@
 #include "guard.h"
 
 Table::Table( const std::string &name )
-  : m_name( name )
-  // TODO: initialize additional member variables
-{
-  locked = false;
-}
+  : m_name( name ), locked(false), key_value_pairs(), proposed_pairs(){}
 
 Table::~Table()
 {
@@ -32,13 +28,13 @@ bool Table::trylock()
 
 void Table::set( const std::string &key, const std::string &value )
 {
-  proposed_pairs[key] = value;
+  this->proposed_pairs[key] = value;
 }
 
 std::string Table::get( const std::string &key )
 {
   // If the key is in the current table
-  if (key_value_pairs.find(key) != key_value_pairs.end()) {
+  if (this->key_value_pairs.find(key) != key_value_pairs.end()) {
 
     return key_value_pairs.at(key);
   } 
