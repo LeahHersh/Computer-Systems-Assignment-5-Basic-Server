@@ -2,11 +2,12 @@
 #define VALUE_STACK_H
 
 #include <vector>
+#include <stack>
 #include <string>
 
 class ValueStack {
 private:
-  // TODO: member variable(s)
+  std::stack<std::string> stack;
 
 public:
   ValueStack();
