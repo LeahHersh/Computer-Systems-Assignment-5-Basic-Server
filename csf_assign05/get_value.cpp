@@ -23,8 +23,6 @@ int main(int argc, char **argv)
   if (fd < 0) {
     std::cerr << "Error: Could not connect to server.\n";
     return 1;
-  } else {
-    std::cerr << "Hit.\n";
   }
 
   /* Login operation */
@@ -33,6 +31,7 @@ int main(int argc, char **argv)
   std::string encoded_login = " ";
 
   encode(login_msg, encoded_login);
+  std::cerr<< encoded_login;
   rio_writen(fd, &encoded_login, encoded_login.size());
   rio_writen(fd, "\n", 1);
 
