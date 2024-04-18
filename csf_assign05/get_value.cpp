@@ -23,6 +23,8 @@ int main(int argc, char **argv)
   if (fd < 0) {
     std::cerr << "Error: Could not connect to server.\n";
     return 1;
+  } else {
+    std::cerr << "Hit.\n";
   }
 
   /* Login operation */
@@ -34,4 +36,15 @@ int main(int argc, char **argv)
   rio_writen(fd, &encoded_login, encoded_login.size());
   rio_writen(fd, "\n", 1);
 
+  rio_t read;
+  rio_readinitb(&read, fd);
+  char buf[50];
+  ssize_t n = rio_readlineb(&read, buf, sizeof(buf));
+
+  if (n <= 0) {
+    std::cerr << "Error: could not recieve server's response.\n";
+    close(fd);
+    return 0;
+  }
+  
 }
