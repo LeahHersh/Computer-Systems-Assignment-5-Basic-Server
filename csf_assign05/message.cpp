@@ -131,7 +131,7 @@ bool Message::is_valid() const
     for (int i = 1; i < identifier_length; i++) {
 
       if (!((m_args[0].at(i) >= 'A' && m_args[0].at(i) <= 'Z') || (m_args[0].at(i) >= 'a' && m_args[0].at(i) <= 'z') ||
-           (m_args[0].at(i) >= '0' && m_args[0].at(i) <= '9') || m_args[0].at(i) == '_')) {
+            (m_args[0].at(i) >= '0' && m_args[0].at(i) <= '9') || m_args[0].at(i) == '_')) {
 
         return false;
       }
@@ -147,5 +147,6 @@ bool Message::is_valid() const
     }
   }
 
+  // Otherwise
   return true;
 }

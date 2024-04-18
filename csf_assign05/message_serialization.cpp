@@ -5,9 +5,9 @@
 #include "exceptions.h"
 #include "message_serialization.h"
 
-void check_message_size(std::string encoded_msg) {
+void check_message_size(std::string msg) {
 
-  if (encoded_msg.length() > Message::MAX_ENCODED_LEN) {
+  if (msg.length() > Message::MAX_ENCODED_LEN) {
     throw InvalidMessage("Message is too long.");
   }
 }
