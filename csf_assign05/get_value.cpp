@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 
   encode(login_msg, encoded_login);
   std::cerr<< encoded_login;
-  rio_writen(fd, &encoded_login, encoded_login.size());
+  rio_writen(fd, encoded_login.data(), encoded_login.size());
   rio_writen(fd, "\n", 1);
 
   rio_t read;
