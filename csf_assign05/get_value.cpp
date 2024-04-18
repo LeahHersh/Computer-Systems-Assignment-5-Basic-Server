@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 
   rio_t read;
   rio_readinitb(&read, fd);
-  char buf[50];
+  char buf[1000];
   ssize_t n = rio_readlineb(&read, buf, sizeof(buf));
 
   if (n <= 0) {
