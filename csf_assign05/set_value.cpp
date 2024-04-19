@@ -207,6 +207,12 @@ int main(int argc, char **argv)
     return 1;
   }
 
+   /* SET operation. Errors printed in functions */
+  int set_result = set_operation(table, key, fd);
+  if (set_result != 0) {
+    return 1;
+  } 
+
   /* BYE operation. Errors/output printed in functions. */
   int bye_result = bye_operation(fd);
   if (bye_result != 0) {
