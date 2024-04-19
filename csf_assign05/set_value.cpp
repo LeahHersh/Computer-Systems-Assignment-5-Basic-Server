@@ -163,7 +163,6 @@ int bye_operation(int fd) {
           bye_response.get_message_type() == MessageType::ERROR) {
 
     std::string error_message = bye_response.get_arg(0);
-
     std::cerr << "Error: " << error_message << std::endl;
     return -1;
   }
@@ -189,7 +188,7 @@ int main(int argc, char **argv)
   std::string value = argv[6];
 
   // Try to connect to server
-  int fd = open_clientfd(argv[1], argv[2]);
+  int fd = open_clientfd(hostname.data(), port.data());
   if (fd < 0) {
     std::cerr << "Error: Could not connect to server.\n";
     return 1;

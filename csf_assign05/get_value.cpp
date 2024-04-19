@@ -193,7 +193,7 @@ int main(int argc, char **argv)
   std::string key = argv[5];
 
   // Try to connect to server
-  int fd = open_clientfd(argv[1], argv[2]);
+  int fd = open_clientfd(hostname.data(), port.data());
   if (fd < 0) {
     std::cerr << "Error: Could not connect to server.\n";
     return 1;
