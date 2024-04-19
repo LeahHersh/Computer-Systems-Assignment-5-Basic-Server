@@ -5,9 +5,9 @@
 
 using namespace MessageSerialization;
 
+
 int login_operation(std::string username, int fd) {
 
-  /* Login operation */
   Message login_msg(MessageType::LOGIN);
   login_msg.push_arg(username);
   std::string encoded_login;
@@ -38,7 +38,6 @@ int login_operation(std::string username, int fd) {
           login_response.get_message_type() == MessageType::ERROR) {
 
     std::string error_message = login_response.get_arg(0);
-
     std::cerr << "Error: " << error_message << std::endl;
     return -1;
   }
@@ -139,12 +138,44 @@ int top_operation(int fd) {
   return -1;
 }
 
-void bye_operation(int fd) {
+
+int bye_operation(int fd) {
   Message bye_msg(MessageType::BYE);
   std::string encoded_bye;
 
   encode(bye_msg, encoded_bye);
   rio_writen(fd, encoded_bye.data(), encoded_bye.size());
+
+  rio_t read;
+  rio_readinitb(&read, fd);
+  char buf[bye_msg.MAX_ENCODED_LEN];
+  ssize_t n = rio_readlineb(&read, buf, sizeof(buf));
+
+  // If the server response couldn't be read
+  if (n <= 0) {
+    std::cerr << "Error: could not read server's response.\n";
+    return -1;
+  }
+  
+  Message bye_response;
+  decode(buf, bye_response);
+
+  // If the server responded with OK, continue the program
+  if(bye_response.get_message_type() == MessageType::OK) {
+    return 0;
+  }
+  // If the server responded with an error message
+  else if(bye_response.get_message_type() == MessageType::FAILED || 
+          bye_response.get_message_type() == MessageType::ERROR) {
+
+    std::string error_message = bye_response.get_arg(0);
+    std::cerr << "Error: " << error_message << std::endl;
+    return -1;
+  }
+
+  // If the server didn't respond with OK or an error message
+  std::cerr << "Error: confirmation from server not received.\n";
+  return -1;
 }
 
 
@@ -186,6 +217,11 @@ int main(int argc, char **argv)
     return 1;
   }
   
-  bye_operation(fd);
+  /* BYE operation. Errors/output printed in functions. */
+  int bye_result = bye_operation(fd);
+  if (bye_result != 0) {
+    return 1;
+  }
+
   return 0;
 }
