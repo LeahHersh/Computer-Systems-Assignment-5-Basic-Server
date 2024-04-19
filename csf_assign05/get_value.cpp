@@ -23,20 +23,29 @@ int login_operation(std::string username, int fd) {
   // If the server response couldn't be read
   if (n <= 0) {
     std::cerr << "Error: could not read server's response.\n";
-
     return -1;
   }
   
   Message login_response;
   decode(buf, login_response);
 
-  // If the server didn't respond with OK, exit
-  if(login_response.get_message_type() != MessageType::OK) {
-    std::cerr << "Error: confirmation from server not recieved.\n";
+  // If the server responded with OK, continue the program
+  if(login_response.get_message_type() == MessageType::OK) {
+    return 0;
+  }
+  // If the server responded with an error message
+  else if(login_response.get_message_type() == MessageType::FAILED || 
+          login_response.get_message_type() == MessageType::ERROR) {
+
+    std::string error_message = login_response.get_arg(0);
+
+    std::cerr << "Error: " << error_message << std::endl;
     return -1;
   }
 
-  return 0;
+  // If the server didn't respond with OK or an error message
+  std::cerr << "Error: confirmation from server not received.\n";
+  return -1;
 }
 
 
@@ -47,7 +56,6 @@ int get_operation(std::string table, std::string key, int fd) {
   std::string encoded_get;
 
   encode(get_msg, encoded_get);
-  std::cerr<< encoded_get;
   rio_writen(fd, encoded_get.data(), encoded_get.size());
 
   rio_t read;
@@ -58,20 +66,28 @@ int get_operation(std::string table, std::string key, int fd) {
   // If the server response couldn't be read
   if (n <= 0) {
     std::cerr << "Error: could not read server's response.\n";
-    close(fd);
     return -1;
   }
 
   Message get_response;
   decode(buf, get_response);
 
-  // If the server doesn't respond with OK, exit
-  if(get_response.get_message_type() != MessageType::OK) {
-    std::cerr << "Error: confirmation from server not recieved.\n";
+  // If the server responded with OK, continue the program
+  if(get_response.get_message_type() == MessageType::OK) {
+    return 0;
+  }
+  // If the server responded with an error message
+  else if(get_response.get_message_type() == MessageType::FAILED || 
+          get_response.get_message_type() == MessageType::ERROR) {
+
+    std::string error_message = get_response.get_arg(0);
+    std::cerr << "Error: " << error_message << std::endl;
     return -1;
   }
 
-  return 0;
+  // If the server didn't respond with OK or an error message
+  std::cerr << "Error: confirmation from server not received.\n";
+  return -1;
 }
 
 
@@ -80,7 +96,6 @@ int top_operation(int fd) {
   std::string encoded_top;
 
   encode(top_msg, encoded_top);
-  std::cerr<< encoded_top;
   rio_writen(fd, encoded_top.data(), encoded_top.size());
 
   rio_t read;
@@ -91,19 +106,41 @@ int top_operation(int fd) {
   // If the server response couldn't be read
   if (n <= 0) {
     std::cerr << "Error: could not read server's response.\n";
-    close(fd);
     return -1;
   }
   
   Message top_response;
   decode(buf, top_response);
 
-  // If the server doesn't respond with a DATA message with one param, exit
+  // If the server responds with a DATA message
   if(top_response.get_message_type() != MessageType::DATA) {
+
+    // If the DATA response does not contain a parameter
+    if (top_response.get_num_args() < 1) {
+      std::cerr << "Error: response does not contain necessary information.\n";
+      return -1;
+    }
+  
+    std::string data = top_response.get_arg(0);
+    std::cout << data << std::endl;
+    return 0;
+  }
+  // Of the server responds with an error message
+  else if (top_response.get_message_type() != MessageType::ERROR ||
+           top_response.get_message_type() != MessageType::FAILED) {
+
+    std::string error_message = top_response.get_arg(0);
+    std::cerr << "Error: " << error_message << std::endl;
     return -1;
   }
+}
 
-  return 0;
+void bye_operation(int fd) {
+  Message bye_msg(MessageType::BYE);
+  std::string encoded_bye;
+
+  encode(bye_msg, encoded_bye);
+  rio_writen(fd, encoded_bye.data(), encoded_bye.size());
 }
 
 
@@ -139,10 +176,12 @@ int main(int argc, char **argv)
     return 1;
   }
   
-  /* TOP operation */
+  /* TOP operation. Errors/output printed in functions. */
   int top_result = top_operation(fd);
   if (top_result != 0) {
     return 1;
   }
   
+  bye_operation(fd);
+  return 0;
 }
