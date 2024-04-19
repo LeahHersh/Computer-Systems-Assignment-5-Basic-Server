@@ -113,7 +113,7 @@ int top_operation(int fd) {
   decode(buf, top_response);
 
   // If the server responds with a DATA message
-  if(top_response.get_message_type() != MessageType::DATA) {
+  if(top_response.get_message_type() == MessageType::DATA) {
 
     // If the DATA response does not contain a parameter
     if (top_response.get_num_args() < 1) {
@@ -125,14 +125,18 @@ int top_operation(int fd) {
     std::cout << data << std::endl;
     return 0;
   }
-  // Of the server responds with an error message
-  else if (top_response.get_message_type() != MessageType::ERROR ||
-           top_response.get_message_type() != MessageType::FAILED) {
+  // Or the server responds with an error message
+  else if (top_response.get_message_type() == MessageType::ERROR ||
+           top_response.get_message_type() == MessageType::FAILED) {
 
     std::string error_message = top_response.get_arg(0);
     std::cerr << "Error: " << error_message << std::endl;
     return -1;
   }
+
+  // If the server didn't respond with DATA or an error message
+  std::cerr << "Error: confirmation from server not received.\n";
+  return -1;
 }
 
 void bye_operation(int fd) {
