@@ -71,8 +71,13 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
 {
   check_message_size(encoded_msg_);
 
+  if (encoded_msg_.back() != '\n') {
+    throw InvalidMessage("Encoded message is missing a newline.");
+  }
+
   // Get the string containing the encoded message's type
   std::stringstream ss(encoded_msg_);
+
   std::string m_type; 
   ss >> m_type;
 
@@ -140,9 +145,6 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   // Convert the rest of the stringstream to a string, and make sure it ends with a newline
   std::string remaining_text;
   std::getline(ss, remaining_text);
-  if (remaining_text.back() != '\n') {
-    throw InvalidMessage("Encoded message is missing a newline.");
-  }
 
   // If the rest of the string is a quoted text, push the text as the Message's only argument
   MessageType msg_type = msg.get_message_type();
