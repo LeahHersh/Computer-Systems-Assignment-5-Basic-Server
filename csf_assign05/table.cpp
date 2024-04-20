@@ -43,6 +43,8 @@ std::string Table::get( const std::string &key )
 
     return proposed_pairs.at(key);
   } 
+
+  return "";
 }
 
 bool Table::has_key( const std::string &key )
