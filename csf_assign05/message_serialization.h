@@ -27,9 +27,9 @@ namespace MessageSerialization {
   /* 
   * Takes a stringstream of arguments and pushes each word in the stringstream as a Message's argument.
   * @param msg The encoded message.
-  * @param ss The stringstream of arguments.
+  * @param args The list of arguments.
   */
-  void extract_single_word_args(Message msg, std::stringstream& ss);
+  void extract_single_word_args(Message msg, std::string args);
 
 };
 

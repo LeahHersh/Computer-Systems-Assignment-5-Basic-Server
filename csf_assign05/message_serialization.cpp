@@ -137,25 +137,24 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   // Clear msg's arguments
   msg.clear_args();
 
-  // If the rest of the string is a quoted text, push it as the only argument
+  // Convert the rest of the stringstream to a string, and make sure it ends with a newline
+  std::string remaining_text = ss.str();
+    if (remaining_text.back() != '\n') {
+    throw InvalidMessage("Encoded message is missing a newline.");
+  }
+
+  // If the rest of the string is a quoted text, push the text as the Message's only argument
   if (msg.get_message_type() == MessageType::FAILED || msg.get_message_type() == MessageType::ERROR) {
-    std::string quoted_text = ss.str();
-    extract_quoted_text_arg(msg, quoted_text);
+    extract_quoted_text_arg(msg, remaining_text);
   }
   // Otherwise, set the decoded message's arguments word by word
   else {
-    extract_single_word_args(msg, ss);
+    extract_single_word_args(msg, remaining_text);
   }
 
   // If the resulting Message is not valid
   if (!msg.is_valid()) {
     throw InvalidMessage("Message is not valid.");
-  }
-
-  // If the encoded message did not end with a newline
-  std::string left_over = ss.str();
-  if (left_over.back() != '\n') {
-    throw InvalidMessage("Encoded message is missing a newline.");
   }
 }
 
@@ -183,9 +182,11 @@ void MessageSerialization::extract_quoted_text_arg(Message msg, std::string quot
 }
 
 
-void MessageSerialization::extract_single_word_args(Message msg, std::stringstream& ss) {
+void MessageSerialization::extract_single_word_args(Message msg, std::string args_list) {
   
+  std::stringstream ss(args_list);
   std::string curr_arg;
+
   while(ss >> curr_arg) {
     msg.push_arg(curr_arg);
   }

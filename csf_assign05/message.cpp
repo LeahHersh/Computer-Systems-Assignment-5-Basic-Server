@@ -91,35 +91,33 @@ void Message::push_arg( const std::string &arg )
 /* Checks that Network Protocols are followed. Protocols are checked separately for readability. */
 bool Message::is_valid() const
 {
+  MessageType msg_type = get_message_type();
+
   // If a request that takes no arguments has an incorrect number of arguments
-  if      ((get_message_type() == MessageType::POP   || get_message_type() == MessageType::TOP || 
-            get_message_type() == MessageType::ADD || get_message_type() == MessageType::MUL || 
-            get_message_type() == MessageType::SUB || get_message_type() == MessageType::DIV ||
-            get_message_type() == MessageType::BEGIN || get_message_type() == MessageType::COMMIT ||
-            get_message_type() == MessageType::BYE) 
+  if      ((msg_type == MessageType::POP || msg_type == MessageType::TOP || msg_type == MessageType::ADD   || msg_type == MessageType::MUL || 
+            msg_type == MessageType::SUB || msg_type == MessageType::DIV || msg_type == MessageType::BEGIN || msg_type == MessageType::COMMIT ||
+            msg_type == MessageType::BYE) 
             && (m_args.size() != 0)) {
   
     return false;
   }
 
   // If a request that takes one argument has an incorrect number of arguments
-  else if ((get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE || 
-            get_message_type() == MessageType::PUSH  || get_message_type() == MessageType::DATA) 
+  else if ((msg_type == MessageType::LOGIN || msg_type == MessageType::CREATE || msg_type == MessageType::PUSH || msg_type == MessageType::DATA) 
             && (m_args.size() != 1)) {
 
     return false;
   }
 
   // If a request that takes two arguments has an incorrect number of arguments
-  else if ((get_message_type() == MessageType::SET || get_message_type() == MessageType::GET) 
-            && (m_args.size() != 2)) {
+  else if ((msg_type == MessageType::SET || msg_type == MessageType::GET) && (m_args.size() != 2)) {
 
     return false;
   }
 
   // If the first argument is an identifier 
-  else if (get_message_type() == MessageType::LOGIN || get_message_type() == MessageType::CREATE ||
-           get_message_type() == MessageType::SET   || get_message_type() == MessageType::GET) {
+  else if (msg_type == MessageType::LOGIN || msg_type == MessageType::CREATE ||
+           msg_type == MessageType::SET   || msg_type == MessageType::GET) {
 
     // and the first character is not a letter
     if (!((m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z'))) {
@@ -139,7 +137,7 @@ bool Message::is_valid() const
   }
 
   // If the argument is a value
-  else if (get_message_type() == MessageType::PUSH) {
+  else if (msg_type == MessageType::PUSH) {
 
     // and only contains white space
     if (std::all_of(m_args[0].begin(),m_args[0].end(),isspace)) {
