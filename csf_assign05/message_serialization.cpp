@@ -138,13 +138,15 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   msg.clear_args();
 
   // Convert the rest of the stringstream to a string, and make sure it ends with a newline
-  std::string remaining_text = ss.str();
-    if (remaining_text.back() != '\n') {
+  std::string remaining_text;
+  std::getline(ss, remaining_text);
+  if (remaining_text.back() != '\n') {
     throw InvalidMessage("Encoded message is missing a newline.");
   }
 
   // If the rest of the string is a quoted text, push the text as the Message's only argument
-  if (msg.get_message_type() == MessageType::FAILED || msg.get_message_type() == MessageType::ERROR) {
+  MessageType msg_type = msg.get_message_type();
+  if (msg_type == MessageType::FAILED || msg_type == MessageType::ERROR) {
     extract_quoted_text_arg(msg, remaining_text);
   }
   // Otherwise, set the decoded message's arguments word by word
