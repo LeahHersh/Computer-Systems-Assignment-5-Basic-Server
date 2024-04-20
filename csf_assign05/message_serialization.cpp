@@ -149,7 +149,7 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   // If the rest of the string is a quoted text, push the text as the Message's only argument
   MessageType msg_type = msg.get_message_type();
   if (msg_type == MessageType::FAILED || msg_type == MessageType::ERROR) {
-    extract_quoted_text_arg(msg, remaining_text);
+    extract_quoted_text_arg(&msg, remaining_text);
   }
   // Otherwise, set the decoded message's arguments word by word
   else {
@@ -171,7 +171,7 @@ void MessageSerialization::check_message_size(std::string msg) {
 }
 
 
-void MessageSerialization::extract_quoted_text_arg(Message msg, std::string quoted_text) {
+void MessageSerialization::extract_quoted_text_arg(Message* msg, std::string quoted_text) {
 
     size_t open_quote_ind = quoted_text.find_first_of('"');
     size_t close_quote_ind = quoted_text.find_last_of('"');
@@ -182,7 +182,7 @@ void MessageSerialization::extract_quoted_text_arg(Message msg, std::string quot
     }
 
     quoted_text = quoted_text.substr(open_quote_ind + 1, close_quote_ind - open_quote_ind - 1);
-    msg.push_arg(quoted_text);
+    msg->push_arg(quoted_text);
 }
 
 

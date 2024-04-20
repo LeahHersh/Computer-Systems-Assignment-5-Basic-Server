@@ -22,7 +22,7 @@ namespace MessageSerialization {
   * @param quoted_text The text between the quotation marks.
   * @throws InvalidMessage if the encoded Message doesn't include a quotation.
   */
-  void extract_quoted_text_arg(Message msg, std::string quoted_text);
+  void extract_quoted_text_arg(Message* msg, std::string quoted_text);
 
   /* 
   * Takes a stringstream of arguments and pushes each word in the stringstream as a Message's argument.
