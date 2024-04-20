@@ -153,7 +153,7 @@ void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg
   }
   // Otherwise, set the decoded message's arguments word by word
   else {
-    extract_single_word_args(msg, remaining_text);
+    extract_single_word_args(&msg, remaining_text);
   }
 
   // If the resulting Message is not valid
@@ -186,13 +186,13 @@ void MessageSerialization::extract_quoted_text_arg(Message msg, std::string quot
 }
 
 
-void MessageSerialization::extract_single_word_args(Message msg, std::string args_list) {
+void MessageSerialization::extract_single_word_args(Message* msg, std::string args_list) {
   
   std::stringstream ss(args_list);
   std::string curr_arg;
 
   while(ss >> curr_arg) {
-    msg.push_arg(curr_arg);
+    msg->push_arg(curr_arg);
   }
 }
 

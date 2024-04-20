@@ -29,7 +29,7 @@ namespace MessageSerialization {
   * @param msg The encoded message.
   * @param args The list of arguments.
   */
-  void extract_single_word_args(Message msg, std::string args);
+  void extract_single_word_args(Message* msg, std::string args);
 
 };
 
