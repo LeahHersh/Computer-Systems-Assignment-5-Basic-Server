@@ -6,58 +6,70 @@
 using namespace MessageSerialization;
 
 
-int login_operation(std::string username, int fd) {
-
-  /* Login operation */
-  Message login_msg(MessageType::LOGIN);
-  login_msg.push_arg(username);
-  std::string encoded_login;
-
-  encode(login_msg, encoded_login);
-  rio_writen(fd, encoded_login.data(), encoded_login.size());
-
-  rio_t read;
-  rio_readinitb(&read, fd);
-  char buf[login_msg.MAX_ENCODED_LEN];
-  ssize_t n = rio_readlineb(&read, buf, sizeof(buf));
-
-  // If the server response couldn't be read
-  if (n <= 0) {
-    std::cerr << "Error: could not read server's response.\n";
-    return -1;
-  }
-  
-  Message login_response;
-  decode(buf, login_response);
+/* Handle a response that is expected to be OK. Return 0 for OK, -1 otherwise. */
+int handle_possible_ok_response(char* buf) {
+  Message response;
+  decode(buf, response);
+  MessageType response_type = response.get_message_type();
 
   // If the server responded with OK, continue the program
-  if(login_response.get_message_type() == MessageType::OK) {
+  if(response_type == MessageType::OK) {
     return 0;
   }
   // If the server responded with an error message
-  else if(login_response.get_message_type() == MessageType::FAILED || 
-          login_response.get_message_type() == MessageType::ERROR) {
+  else if(response_type == MessageType::FAILED || response_type == MessageType::ERROR) {
 
-    std::string error_message = login_response.get_arg(0);
+    std::string error_message = response.get_arg(0);
     std::cerr << "Error: " << error_message << std::endl;
     return -1;
   }
 
-  // If the server didn't respond with OK or an error message
+  // If the server didn't respond with OK Message or an error Message
   std::cerr << "Error: confirmation from server not received.\n";
   return -1;
 }
 
 
+int login_operation(std::string username, int fd) {
+
+  // Create a login Message
+  Message login_msg(MessageType::LOGIN);
+  login_msg.push_arg(username);
+
+  // Encode and send the Message
+  std::string encoded_login;
+  encode(login_msg, encoded_login);
+  rio_writen(fd, encoded_login.data(), encoded_login.size());
+
+  // Read the server's response
+  rio_t read;
+  rio_readinitb(&read, fd);
+  char buf[login_msg.MAX_ENCODED_LEN];
+  ssize_t n = rio_readlineb(&read, buf, sizeof(buf));
+
+  // Return with -1 if the server response couldn't be read
+  if (n <= 0) {
+    std::cerr << "Error: could not read server's response.\n";
+    return -1;
+  }
+  
+  // Handle the OK, error or undefined response
+  return handle_possible_ok_response(buf);
+}
+
+
 int push_operation(std::string value, int fd) {
 
+  // Create a PUSH Message
   Message push_msg(MessageType::PUSH);
   push_msg.push_arg(value);
-  std::string encoded_push;
 
+  // Encode and print the Message
+  std::string encoded_push;
   encode(push_msg, encoded_push);
   rio_writen(fd, encoded_push.data(), encoded_push.size());
 
+  // Read the server's response
   rio_t read;
   rio_readinitb(&read, fd);
   char buf[push_msg.MAX_ENCODED_LEN];
@@ -69,37 +81,23 @@ int push_operation(std::string value, int fd) {
     return -1;
   }
   
-  Message push_response;
-  decode(buf, push_response);
-
-  // If the server responded with OK, continue the program
-  if(push_response.get_message_type() == MessageType::OK) {
-    return 0;
-  }
-  // If the server responded with an error message
-  else if(push_response.get_message_type() == MessageType::FAILED || 
-          push_response.get_message_type() == MessageType::ERROR) {
-
-    std::string error_message = push_response.get_arg(0);
-    std::cerr << "Error: " << error_message << std::endl;
-    return -1;
-  }
-
-  // If the server didn't respond with OK or an error message
-  std::cerr << "Error: confirmation from server not received.\n";
-  return -1;
+  return handle_possible_ok_response(buf);
 }
 
 
 int set_operation(std::string table, std::string key, int fd) {
+
+  // Create a SET Message
   Message set_msg(MessageType::SET);
   set_msg.push_arg(table);
   set_msg.push_arg(key);
-  std::string encoded_set;
 
+  // Encode and print the Message
+  std::string encoded_set;
   encode(set_msg, encoded_set);
   rio_writen(fd, encoded_set.data(), encoded_set.size());
 
+  // Read the server's response
   rio_t read;
   rio_readinitb(&read, fd);
   char buf[set_msg.MAX_ENCODED_LEN];
@@ -111,25 +109,7 @@ int set_operation(std::string table, std::string key, int fd) {
     return -1;
   }
 
-  Message set_response;
-  decode(buf, set_response);
-
-  // If the server responded with OK, continue the program
-  if(set_response.get_message_type() == MessageType::OK) {
-    return 0;
-  }
-  // If the server responded with an error message
-  else if(set_response.get_message_type() == MessageType::FAILED || 
-          set_response.get_message_type() == MessageType::ERROR) {
-
-    std::string error_message = set_response.get_arg(0);
-    std::cerr << "Error: " << error_message << std::endl;
-    return -1;
-  }
-
-  // If the server didn't respond with OK or an error message
-  std::cerr << "Error: confirmation from server not received.\n";
-  return -1;
+  return handle_possible_ok_response(buf);
 }
 
 
@@ -151,25 +131,7 @@ int bye_operation(int fd) {
     return -1;
   }
   
-  Message bye_response;
-  decode(buf, bye_response);
-
-  // If the server responded with OK, continue the program
-  if(bye_response.get_message_type() == MessageType::OK) {
-    return 0;
-  }
-  // If the server responded with an error message
-  else if(bye_response.get_message_type() == MessageType::FAILED || 
-          bye_response.get_message_type() == MessageType::ERROR) {
-
-    std::string error_message = bye_response.get_arg(0);
-    std::cerr << "Error: " << error_message << std::endl;
-    return -1;
-  }
-
-  // If the server didn't respond with OK or an error message
-  std::cerr << "Error: confirmation from server not received.\n";
-  return -1;
+  return handle_possible_ok_response(buf);
 }
 
 
