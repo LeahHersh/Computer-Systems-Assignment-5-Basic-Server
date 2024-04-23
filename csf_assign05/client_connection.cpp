@@ -10,13 +10,14 @@
 ClientConnection::ClientConnection( Server *server, int client_fd )
   : m_server( server )
   , m_client_fd( client_fd )
+  , in_transaction(false)
 {
   rio_readinitb( &m_fdbuf, m_client_fd );
 }
 
 ClientConnection::~ClientConnection()
 {
-  // TODO: implement
+  close(m_client_fd);
 }
 
 void ClientConnection::chat_with_client()

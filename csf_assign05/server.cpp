@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <memory>
+#include <iterator>
 #include <pthread.h>
 #include "csapp.h"
 #include "exceptions.h"
@@ -15,7 +16,9 @@ Server::Server()
 
 Server::~Server()
 {
-  // TODO: implement
+  for (auto it = clients_holding_locks.begin(); it != clients_holding_locks.end(); it++) {
+    
+  }
 }
 
 void Server::listen( const std::string &port )

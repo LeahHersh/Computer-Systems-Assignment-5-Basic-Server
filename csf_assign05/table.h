@@ -9,7 +9,9 @@ class Table {
 private:
   std::string m_name;
 
-  bool locked;
+  pthread_mutex_t* mutex;
+
+  bool mutex_is_locked;
 
   /* String keys are mapped to string values. */
   std::unordered_map<std::string, std::string> key_value_pairs;

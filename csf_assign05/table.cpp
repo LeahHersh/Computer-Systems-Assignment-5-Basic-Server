@@ -4,26 +4,33 @@
 #include "guard.h"
 
 Table::Table( const std::string &name )
-  : m_name( name ), locked(false), key_value_pairs(), proposed_pairs(){}
+  : m_name( name ), mutex_is_locked( false ), key_value_pairs(), proposed_pairs() {
+
+    pthread_mutex_init(mutex, NULL);
+  }
 
 Table::~Table()
 {
-  // TODO: implement
+  pthread_mutex_destroy(mutex);
 }
 
 void Table::lock()
 {
-  // TODO: implement
+  lock;
 }
 
 void Table::unlock()
 {
-  // TODO: implement
+  unlock;
 }
 
 bool Table::trylock()
 {
-  // TODO: implement
+  if (mutex_is_locked) {
+    return false;
+  }
+
+  return true;
 }
 
 void Table::set( const std::string &key, const std::string &value )
@@ -44,6 +51,8 @@ std::string Table::get( const std::string &key )
     return proposed_pairs.at(key);
   } 
 
+  throw OperationException("Key that does not exist requested");
+  // Return statement never reached
   return "";
 }
 

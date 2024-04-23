@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <pthread.h>
 #include "table.h"
@@ -10,6 +10,7 @@
 class Server {
 private:
   int server_fd;
+  std::unordered_map<ClientConnection, bool> clients_holding_locks;
 
   // copy constructor and assignment operator are prohibited
   Server( const Server & );
@@ -20,6 +21,7 @@ public:
   ~Server();
 
   void listen( const std::string &port );
+
   void server_loop();
 
   static void *client_worker( void *arg );
@@ -29,10 +31,9 @@ public:
   // TODO: add member functions
 
   // Some suggested member functions:
-/*
   void create_table( const std::string &name );
+
   Table *find_table( const std::string &name );
-*/
 };
 
 

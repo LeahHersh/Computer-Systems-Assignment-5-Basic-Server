@@ -1,7 +1,7 @@
 #ifndef CLIENT_CONNECTION_H
 #define CLIENT_CONNECTION_H
 
-#include <set>
+#include <unordered_set>
 #include "message.h"
 #include "csapp.h"
 #include "value_stack.h"
@@ -15,6 +15,8 @@ private:
   int m_client_fd;
   rio_t m_fdbuf;
   ValueStack stack;
+  std::unordered_set<Table> locked_tables;
+  bool in_transaction;
 
   // copy constructor and assignment operator are prohibited
   ClientConnection( const ClientConnection & );
