@@ -24,4 +24,9 @@ void ClientConnection::chat_with_client()
   // TODO: implement
 }
 
+int ClientConnection::get_m_client_fd() 
+{
+  return m_client_fd;
+}
+
 // TODO: additional member functions

@@ -4,6 +4,7 @@
 #include <set>
 #include "message.h"
 #include "csapp.h"
+#include "value_stack.h"
 
 class Server; // forward declaration
 class Table; // forward declaration
@@ -13,6 +14,7 @@ private:
   Server *m_server;
   int m_client_fd;
   rio_t m_fdbuf;
+  ValueStack stack;
 
   // copy constructor and assignment operator are prohibited
   ClientConnection( const ClientConnection & );
@@ -23,6 +25,8 @@ public:
   ~ClientConnection();
 
   void chat_with_client();
+
+  int get_m_client_fd();
 
   // TODO: additional member functions
 };
