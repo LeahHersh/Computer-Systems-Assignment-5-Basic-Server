@@ -17,11 +17,13 @@ Table::~Table()
 void Table::lock()
 {
   lock;
+  mutex_is_locked = true;
 }
 
 void Table::unlock()
 {
   unlock;
+  mutex_is_locked = false;
 }
 
 bool Table::trylock()

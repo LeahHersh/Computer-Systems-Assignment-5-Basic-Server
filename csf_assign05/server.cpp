@@ -16,9 +16,7 @@ Server::Server()
 
 Server::~Server()
 {
-  for (auto it = clients_holding_locks.begin(); it != clients_holding_locks.end(); it++) {
-    
-  }
+  // TODO: implement
 }
 
 void Server::listen( const std::string &port )

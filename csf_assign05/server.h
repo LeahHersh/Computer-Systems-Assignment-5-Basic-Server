@@ -10,7 +10,7 @@
 class Server {
 private:
   int server_fd;
-  std::unordered_map<ClientConnection, bool> clients_holding_locks;
+  std::unordered_map<std::string, Table*> table_names;
 
   // copy constructor and assignment operator are prohibited
   Server( const Server & );

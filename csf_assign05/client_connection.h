@@ -15,7 +15,7 @@ private:
   int m_client_fd;
   rio_t m_fdbuf;
   ValueStack stack;
-  std::unordered_set<Table> locked_tables;
+  std::unordered_set<Table*> locked_tables;
   bool in_transaction;
 
   // copy constructor and assignment operator are prohibited
