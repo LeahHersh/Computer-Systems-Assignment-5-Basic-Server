@@ -14,6 +14,10 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
   // Add the message's type to the encoded message
   switch (m_type) {
 
+  case MessageType::CREATE: encoded_msg = "CREATE";
+    break;
+    case MessageType::LOGIN: encoded_msg = "LOGIN";
+    break;
   case MessageType::BEGIN: encoded_msg = "BEGIN";
     break;
   case MessageType::COMMIT: encoded_msg = "COMMIT";
@@ -37,10 +41,6 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
   case MessageType::FAILED: encoded_msg = "FAILED";
     break;
   case MessageType::ERROR: encoded_msg = "ERROR";
-    break;
-  case MessageType::LOGIN: encoded_msg = "LOGIN";
-    break;
-  case MessageType::CREATE: encoded_msg = "CREATE";
     break;
   case MessageType::PUSH: encoded_msg = "PUSH";
     break;
