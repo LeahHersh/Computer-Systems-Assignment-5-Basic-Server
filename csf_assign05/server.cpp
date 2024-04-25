@@ -11,12 +11,14 @@
 Server::Server() 
 : server_fd(0)
 {
-  // TODO: implement
+  // Mutex is used to lock a server while tables are being created
+  pthread_mutex_init(mutex, NULL);
 }
 
 Server::~Server()
 {
-  // TODO: implement
+  close(server_fd);
+  pthread_mutex_destroy(mutex);
 }
 
 void Server::listen( const std::string &port )

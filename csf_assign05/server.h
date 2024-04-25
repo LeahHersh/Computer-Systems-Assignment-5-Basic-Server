@@ -12,6 +12,10 @@ private:
   int server_fd;
   std::unordered_map<std::string, Table*> table_names;
 
+  pthread_mutex_t* mutex;
+
+  bool mutex_is_locked;
+
   // copy constructor and assignment operator are prohibited
   Server( const Server & );
   Server &operator=( const Server & );

@@ -47,7 +47,7 @@ void ClientConnection::chat_with_client()
 }
 
 void ClientConnection::call_response_function(Message response_msg) {
-        MessageType response_type = response_msg.get_message_type();
+  MessageType response_type = response_msg.get_message_type();
   
   // Choose which helper function to call
   switch (response_type) {
@@ -97,7 +97,6 @@ void ClientConnection::call_response_function(Message response_msg) {
   default: throw InvalidMessage("Client message did not have a valid request type.");
   }
 }
-
 
 
 int ClientConnection::get_m_client_fd() 
