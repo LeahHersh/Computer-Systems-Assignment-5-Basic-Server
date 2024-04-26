@@ -39,7 +39,6 @@ public:
 
   std::unordered_map<std::string, Table*> get_table_map() { return table_names; }
 
-  // Some suggested member functions:
   void create_table( const std::string &name );
 
   Table *find_table( const std::string &name );

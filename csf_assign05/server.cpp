@@ -28,8 +28,7 @@ void Server::listen( const std::string &port )
 
 }
 
-void Server::server_loop()
-{
+void Server::server_loop() {
 
   while (1) {
     int client_fd = accept(server_fd, nullptr, nullptr);
@@ -71,28 +70,31 @@ void *Server::client_worker( void *arg )
   std::unique_ptr<ClientConnection> client( static_cast<ClientConnection *>( arg ) );
 
   client->chat_with_client();
-  
+
   close(client->get_m_client_fd());
   free(arg);
   return nullptr;
 }
+
 
 void Server::log_error( const std::string &what )
 {
   std::cerr << "Error: " << what << "\n";
 }
 
+
 void Server::lock()
 {
   mutex_is_locked = true;
-  lock;
+  pthread_mutex_lock(mutex);
 }
 
-void Server::unlock()
-{
-  unlock;
+
+void Server::unlock() {
+  pthread_mutex_unlock(mutex);
   mutex_is_locked = false;
 }
+
 
 void Server::create_table( const std::string &name ) {
   Table* new_table = new Table(name);
@@ -100,6 +102,13 @@ void Server::create_table( const std::string &name ) {
   table_names[name] = new_table;
 }
 
-Table *find_table( const std::string &name ) {
-  
+
+Table* Server::find_table( const std::string &name ) {
+
+  // If the table name is in the map, return its corresponding table
+  if (table_names.find(name) != table_names.end()) {
+    return table_names[name];
+  }
+
+  return nullptr;
 }

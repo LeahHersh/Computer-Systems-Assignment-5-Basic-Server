@@ -28,6 +28,7 @@ public:
   ~Table();
 
   std::string get_name() const { return m_name; }
+  bool get_is_locked() const { return mutex_is_locked; }
 
   void lock();
   void unlock();

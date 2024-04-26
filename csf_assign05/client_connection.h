@@ -22,14 +22,23 @@ private:
   ClientConnection( const ClientConnection & );
   ClientConnection &operator=( const ClientConnection & );
 
+
 public:
   ClientConnection( Server *server, int client_fd );
   ~ClientConnection();
 
   void chat_with_client();
 
-  /* Takes an exception and turns it into a failure response to client, then kills the client. */
-  void manage_unrecoverable_ex(std::runtime_error ex);
+  int get_m_client_fd();
+
+
+private:
+  /* Takes an exception and turns it into a message to send to the client, then kills the 
+  ClientConnection if the error is unrecoverable. */
+  void manage_exception(std::runtime_error ex, bool recoverable);
+
+  /* Rolls back changes in altered Tables and unlocks them. */
+  void fail_transaction();
 
   /* Finds a message's type and calls the appropriate response function based on the type. */
   void call_response_function(Message response_msg);
@@ -64,10 +73,6 @@ public:
 
   /* Respond to client with OK Message */
   void write_ok();
-
-  int get_m_client_fd();
-
-  // TODO: additional member functions
 };
 
 #endif // CLIENT_CONNECTION_H

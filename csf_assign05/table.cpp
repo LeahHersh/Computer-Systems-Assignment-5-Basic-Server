@@ -17,12 +17,12 @@ Table::~Table()
 void Table::lock()
 {
   mutex_is_locked = true;
-  lock;
+  pthread_mutex_lock(mutex);
 }
 
 void Table::unlock()
 {
-  unlock;
+  pthread_mutex_unlock(mutex);
   mutex_is_locked = false;
 }
 
