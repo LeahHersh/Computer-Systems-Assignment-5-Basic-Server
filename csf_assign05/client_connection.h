@@ -28,6 +28,9 @@ public:
 
   void chat_with_client();
 
+  /* Takes an exception and turns it into a failure response to client, then kills the client. */
+  void manage_unrecoverable_ex(std::runtime_error ex);
+
   /* Finds a message's type and calls the appropriate response function based on the type. */
   void call_response_function(Message response_msg);
 
@@ -49,7 +52,7 @@ public:
 
   void handle_bye(Message response_msg);
 
-  void handle_login(Message response_msg);
+  void handle_login(bool first_valid_message);
 
   void handle_create(Message response_msg);
 
@@ -58,6 +61,9 @@ public:
   void handle_set(Message response_msg);
 
   void handle_get(Message response_msg);
+
+  /* Respond to client with OK Message */
+  void write_ok();
 
   int get_m_client_fd();
 

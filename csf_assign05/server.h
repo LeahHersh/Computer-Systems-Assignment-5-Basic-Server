@@ -10,6 +10,7 @@
 class Server {
 private:
   int server_fd;
+
   std::unordered_map<std::string, Table*> table_names;
 
   pthread_mutex_t* mutex;
@@ -32,7 +33,11 @@ public:
 
   void log_error( const std::string &what );
 
-  // TODO: add member functions
+  void lock();
+
+  void unlock();
+
+  std::unordered_map<std::string, Table*> get_table_map() { return table_names; }
 
   // Some suggested member functions:
   void create_table( const std::string &name );

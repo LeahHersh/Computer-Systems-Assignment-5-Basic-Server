@@ -68,9 +68,10 @@ void *Server::client_worker( void *arg )
   return nullptr;
 */
 
-std::unique_ptr<ClientConnection> client( static_cast<ClientConnection *>( arg ) );
-  client->chat_with_client();
+  std::unique_ptr<ClientConnection> client( static_cast<ClientConnection *>( arg ) );
 
+  client->chat_with_client();
+  
   close(client->get_m_client_fd());
   free(arg);
   return nullptr;
@@ -81,4 +82,24 @@ void Server::log_error( const std::string &what )
   std::cerr << "Error: " << what << "\n";
 }
 
-// TODO: implement member functions
+void Server::lock()
+{
+  mutex_is_locked = true;
+  lock;
+}
+
+void Server::unlock()
+{
+  unlock;
+  mutex_is_locked = false;
+}
+
+void Server::create_table( const std::string &name ) {
+  Table* new_table = new Table(name);
+
+  table_names[name] = new_table;
+}
+
+Table *find_table( const std::string &name ) {
+  
+}

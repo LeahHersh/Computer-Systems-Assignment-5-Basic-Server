@@ -16,8 +16,8 @@ Table::~Table()
 
 void Table::lock()
 {
-  lock;
   mutex_is_locked = true;
+  lock;
 }
 
 void Table::unlock()
