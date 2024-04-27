@@ -43,7 +43,8 @@ void ClientConnection::chat_with_client() {
       
       // If the Message is a login
       if (client_msg.get_message_type() == MessageType::LOGIN) {
-        handle_login(first_valid_message);
+        try { handle_login(first_valid_message); }
+        catch (OperationException ex) { manage_exception(ex, true); }
         continue;
         // If the Message isn't a login but is the first valid Message
       } else if (first_valid_message) {
@@ -53,7 +54,6 @@ void ClientConnection::chat_with_client() {
         rio_writen(m_client_fd, encoded_error.data(), encoded_error.size());
         continue;
       }
-      first_valid_message = false;
 
       call_response_function(client_msg);
     }
@@ -69,7 +69,6 @@ int ClientConnection::get_m_client_fd() {
 
 
 void ClientConnection::manage_exception (std::runtime_error ex, bool recoverable) {
-
   // Assign a MessageType to the server's response to the client
   MessageType response_type = (recoverable) ? MessageType::FAILED : MessageType::ERROR;
 
@@ -172,12 +171,13 @@ void ClientConnection::handle_create(Message client_msg) {
 }
 
 
-void ClientConnection::handle_login(bool first_valid_message) {
-  
+void ClientConnection::handle_login(bool& first_valid_message) {
+
   if(!first_valid_message) {
     throw OperationException("You are already logged in.");
   }
 
+  first_valid_message = false;
   write_ok();
 }
 

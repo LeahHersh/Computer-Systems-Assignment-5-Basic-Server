@@ -61,7 +61,7 @@ private:
 
   void handle_bye();
 
-  void handle_login(bool first_valid_message);
+  void handle_login(bool& first_valid_message);
 
   void handle_create(Message client_msg);
 
