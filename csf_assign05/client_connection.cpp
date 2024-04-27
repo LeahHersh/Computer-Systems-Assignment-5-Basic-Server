@@ -29,8 +29,8 @@ ClientConnection::~ClientConnection() {
 void ClientConnection::chat_with_client() {
   bool input_left = true;
   bool first_valid_message = true;
-  Message response_msg;
-  char buf[response_msg.MAX_ENCODED_LEN];
+  Message client_msg;
+  char buf[client_msg.MAX_ENCODED_LEN];
 
   while (input_left) {
     ssize_t n = Rio_readlineb(&m_fdbuf, buf, sizeof(m_fdbuf));
@@ -38,11 +38,11 @@ void ClientConnection::chat_with_client() {
     // If nothing is read from the client
     if (n <= 0) { input_left = false; }
     else {
-      try { decode(buf, response_msg); } 
+      try { decode(buf, client_msg); } 
       catch (InvalidMessage ex) { manage_exception(ex, false); }
       
       // If the Message is a login
-      if (response_msg.get_message_type() == MessageType::LOGIN) {
+      if (client_msg.get_message_type() == MessageType::LOGIN) {
         handle_login(first_valid_message);
         continue;
         // If the Message isn't a login but is the first valid Message
@@ -55,7 +55,7 @@ void ClientConnection::chat_with_client() {
       }
       first_valid_message = false;
 
-      call_response_function(response_msg);
+      call_response_function(client_msg);
     }
     // End connection with client when no more input can be read
     free(this);
@@ -99,51 +99,51 @@ void ClientConnection::fail_transaction() {
 }
 
 
-void ClientConnection::call_response_function(Message response_msg) {
-  MessageType response_type = response_msg.get_message_type();
+void ClientConnection::call_response_function(Message client_msg) {
+  MessageType response_type = client_msg.get_message_type();
   
   try {
     // Choose which helper function to call
     switch (response_type) {
 
       case MessageType::CREATE:
-        handle_create(response_msg);
+        handle_create(client_msg);
         break;
       case MessageType::BEGIN:
-        handle_begin(response_msg);
+        handle_begin();
         break;
       case MessageType::COMMIT:
-        handle_commit(response_msg);
+        handle_commit();
         break;
       case MessageType::POP:
-        handle_pop(response_msg);
+        handle_pop();
         break;
       case MessageType::TOP:
-        handle_top(response_msg);
+        handle_top();
         break;
       case MessageType::ADD:
-        handle_add(response_msg);
+        handle_add();
         break;
       case MessageType::SUB:
-        handle_sub(response_msg);
+        handle_sub();
         break;
       case MessageType::MUL:
-        handle_mul(response_msg);
+        handle_mul();
         break;
       case MessageType::DIV:
-        handle_div(response_msg);
+        handle_div();
         break;
       case MessageType::BYE:
-        handle_bye(response_msg);
+        handle_bye();
         break;
       case MessageType::PUSH:
-        handle_push(response_msg);
+        handle_push(client_msg);
         break;
       case MessageType::SET:
-        handle_set(response_msg);
+        handle_set(client_msg);
         break;
       case MessageType::GET:
-        handle_get(response_msg);
+        handle_get(client_msg);
         break;
       default: throw OperationException("Please only enter standardized requests.");
     }
@@ -154,15 +154,14 @@ void ClientConnection::call_response_function(Message response_msg) {
 }
 
 
-void ClientConnection::handle_create(Message response_msg) {
+void ClientConnection::handle_create(Message client_msg) {
 
   m_server->lock();
+  std::string table_name = client_msg.get_arg(0);
 
-  std::string table_name = response_msg.get_arg(0);
-  std::unordered_map<std::string, Table*> server_map = m_server->get_table_map();
-
-  // If the table's names is already in the server's map of tables
-  if (server_map.find(table_name) != server_map.end()) {
+  // If the table's name is already in the server's map of tables
+  if (m_server->find_table(table_name) != nullptr) {
+    m_server->unlock();
     throw OperationException("A table with this name already exists.");
   }
 
@@ -183,7 +182,7 @@ void ClientConnection::handle_login(bool first_valid_message) {
 }
 
 
-void ClientConnection::handle_begin(Message response_msg) {
+void ClientConnection::handle_begin() {
 
   if (in_transaction) {
     throw FailedTransaction("Nested transactions are not supported.");
@@ -194,7 +193,7 @@ void ClientConnection::handle_begin(Message response_msg) {
 }
 
 
-void ClientConnection::handle_commit(Message response_msg) { 
+void ClientConnection::handle_commit() { 
 
   if (!in_transaction) {
     throw FailedTransaction("Transaction is not ongoing.");
@@ -209,6 +208,148 @@ void ClientConnection::handle_commit(Message response_msg) {
   in_transaction = false;
 
   write_ok();
+}
+
+
+void ClientConnection::handle_pop() {
+  // Will throw OperationException if stack is empty
+  stack.pop();
+}
+
+
+void ClientConnection::handle_top() {
+  // Will throw OperationException if stack is empty
+  std::string top_value = stack.get_top();
+
+  // Create DATA Message
+  Message data_msg(MessageType::DATA);
+  data_msg.push_arg(top_value);
+
+  // Encode and send data Message
+  std::string encoded_data;
+  encode(data_msg, encoded_data);
+  rio_writen(m_client_fd, encoded_data.data(), encoded_data.size());
+}
+
+
+void ClientConnection::handle_add() {
+  if (stack.get_size() < 2) {
+    throw OperationException("There are not enough operands to add with.");
+  }
+  
+  int right_operand;
+  int left_operand;
+  try {
+    right_operand = std::stoi(stack.get_top());
+    stack.pop();
+
+    left_operand = std::stoi(stack.get_top());
+    stack.pop();
+  }
+  catch (std::invalid_argument ex) {
+    throw OperationException("Value on stack could not be converted to an integer.");
+  }
+
+  stack.push(std::to_string((left_operand + right_operand)));
+  write_ok();
+}
+
+
+void ClientConnection::handle_sub() {
+  if (stack.get_size() < 2) {
+    throw OperationException("There are not enough operands to subtract with.");
+  }
+  
+  int right_operand;
+  int left_operand;
+  try {
+    right_operand = std::stoi(stack.get_top());
+    stack.pop();
+
+    left_operand = std::stoi(stack.get_top());
+    stack.pop();
+  }
+  catch (std::invalid_argument ex) {
+    throw OperationException("Value on stack could not be converted to an integer.");
+  }
+
+  stack.push(std::to_string((left_operand - right_operand)));
+  write_ok();
+}
+
+
+void ClientConnection::handle_mul() {
+  if (stack.get_size() < 2) {
+    throw OperationException("There are not enough operands to multiply with.");
+  }
+  
+  int right_operand;
+  int left_operand;
+  try {
+    right_operand = std::stoi(stack.get_top());
+    stack.pop();
+
+    left_operand = std::stoi(stack.get_top());
+    stack.pop();
+  }
+  catch (std::invalid_argument ex) {
+    throw OperationException("Value on stack could not be converted to an integer.");
+  }
+
+  stack.push(std::to_string((left_operand * right_operand)));
+  write_ok();
+}
+
+
+void ClientConnection::handle_div() {
+  if (stack.get_size() < 2) {
+    throw OperationException("There are not enough operands to divide with.");
+  }
+  
+  int right_operand;
+  int left_operand;
+  try {
+    right_operand = std::stoi(stack.get_top());
+    stack.pop();
+
+    left_operand = std::stoi(stack.get_top());
+    stack.pop();
+  }
+  catch (std::invalid_argument ex) {
+    throw OperationException("Value on stack could not be converted to an integer.");
+  }
+
+  stack.push(std::to_string((left_operand / right_operand)));
+  write_ok();
+}
+
+
+void ClientConnection::handle_bye() {
+  free(this);
+  write_ok();
+}
+
+
+void ClientConnection::handle_push(Message client_msg) {
+  stack.push(client_msg.get_arg(0));
+  write_ok();
+}
+
+
+void ClientConnection::handle_set(Message client_msg) {
+
+  std::string table_name = client_msg.get_arg(0);
+  Table* table_obj = m_server->find_table(table_name);
+  
+  if (table_obj == nullptr) {
+    throw OperationException("Could not find table.");
+  }
+
+  if (!in_transaction) {
+    table_obj->lock();
+    
+  }
+  
 }
 
 

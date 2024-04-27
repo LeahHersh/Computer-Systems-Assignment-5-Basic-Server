@@ -32,6 +32,8 @@ bool Table::trylock()
     return false;
   }
 
+  mutex_is_locked = true;
+  pthread_mutex_lock(mutex);
   return true;
 }
 

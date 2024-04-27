@@ -41,7 +41,9 @@ public:
 
   void create_table( const std::string &name );
 
-  Table *find_table( const std::string &name );
+  /* Check if a table is in the server's table map. Return the table if it is, and 
+  return nullptr otherwise. */
+  Table* find_table( const std::string &name );
 };
 
 

@@ -16,11 +16,10 @@ public:
   bool is_empty() const;
   void push( const std::string &value );
 
-  // Note: get_top() and pop() should throw OperationException
-  // if called when the stack is empty
-
   std::string get_top() const;
   void pop();
+
+  int get_size();
 };
 
 #endif // VALUE_STACK_H

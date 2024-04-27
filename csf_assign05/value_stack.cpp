@@ -31,11 +31,14 @@ std::string ValueStack::get_top() const
   return stack.top();
 }
 
-void ValueStack::pop()
-{
+void ValueStack::pop() {
   if (stack.empty()) {
     throw OperationException("Tried to call POP on an empty operations stack.");
   }
 
   stack.pop();
+}
+
+int ValueStack::get_size() {
+  return stack.size();
 }

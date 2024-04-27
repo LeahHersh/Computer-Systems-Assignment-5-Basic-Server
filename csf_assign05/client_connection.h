@@ -41,35 +41,35 @@ private:
   void fail_transaction();
 
   /* Finds a message's type and calls the appropriate response function based on the type. */
-  void call_response_function(Message response_msg);
+  void call_response_function(Message client_msg);
 
-  void handle_begin(Message response_msg);
+  void handle_begin();
 
-  void handle_commit(Message response_msg);
+  void handle_commit();
 
-  void handle_pop(Message response_msg);
+  void handle_pop();
 
-  void handle_top(Message response_msg);
+  void handle_top();
 
-  void handle_add(Message response_msg);
+  void handle_add();
 
-  void handle_sub(Message response_msg);
+  void handle_sub();
 
-  void handle_mul(Message response_msg);
+  void handle_mul();
 
-  void handle_div(Message response_msg);
+  void handle_div();
 
-  void handle_bye(Message response_msg);
+  void handle_bye();
 
   void handle_login(bool first_valid_message);
 
-  void handle_create(Message response_msg);
+  void handle_create(Message client_msg);
 
-  void handle_push(Message response_msg);
+  void handle_push(Message client_msg);
 
-  void handle_set(Message response_msg);
+  void handle_set(Message client_msg);
 
-  void handle_get(Message response_msg);
+  void handle_get(Message client_msg);
 
   /* Respond to client with OK Message */
   void write_ok();
