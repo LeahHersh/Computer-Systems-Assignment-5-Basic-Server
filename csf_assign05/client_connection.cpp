@@ -341,15 +341,79 @@ void ClientConnection::handle_set(Message client_msg) {
   std::string table_name = client_msg.get_arg(0);
   Table* table_obj = m_server->find_table(table_name);
   
-  if (table_obj == nullptr) {
-    throw OperationException("Could not find table.");
-  }
+  if (table_obj == nullptr) { throw OperationException("Could not find table."); }
 
+  // During atomic operations where it is confirmed that the table exists
   if (!in_transaction) {
     table_obj->lock();
-    
+    try { set_table_value(client_msg, table_obj); }
+    catch (OperationException ex) { throw OperationException(ex.what()); }
+
+    table_obj->unlock();
+    // During transactions
+  } else {
+    bool lock_successful = table_obj->trylock();
+
+    if (lock_successful = false) { throw FailedTransaction("Could not monopolize access to table."); }
+    try { set_table_value(client_msg, table_obj); }
+    catch (OperationException ex) { throw OperationException(ex.what()); }
   }
+  write_ok();
+}
+
+
+void ClientConnection::set_table_value(Message client_msg, Table* table_obj) {
+  std::string key = client_msg.get_arg(1);
+
+    // If the table does not have the key specified by the client, throw an exception
+    if (!table_obj->has_key(key)) {
+      table_obj->unlock();
+      throw OperationException("Could not find key in specified table.");
+    }
+    // Otherwise, set the new value to the table (as a suggestion during transactions), and pop it
+    if (!in_transaction) {
+      table_obj->set(key, stack.get_top());
+    } 
+    else {
+      table_obj->suggest_set(key, stack.get_top());
+    }
+    stack.pop(); 
+}
+
+
+void ClientConnection::handle_get(Message client_msg) {
+  std::string table_name = client_msg.get_arg(0);
+  Table* table_obj = m_server->find_table(table_name);
   
+  if (table_obj == nullptr) { throw OperationException("Could not find table."); }
+  
+  // During atomic operations where it is confirmed that the table exists
+  if (!in_transaction) {
+    table_obj->lock();
+    try { get_table_value(client_msg, table_obj); }
+    catch (OperationException ex) { throw OperationException(ex.what()); }
+
+    table_obj->unlock();
+  // During transactions
+  } else {
+    bool lock_successful = table_obj->trylock();
+    if (lock_successful = false) { throw FailedTransaction("Could not monopolize access to table."); }
+    
+    try { get_table_value(client_msg, table_obj); }
+    catch (OperationException ex) { throw OperationException(ex.what()); }
+  }
+  write_ok();
+}
+
+
+void ClientConnection::get_table_value(Message client_msg, Table* table_obj) {
+  std::string key = client_msg.get_arg(1);
+
+  if (!table_obj->has_key(key)) {
+      table_obj->unlock();
+      throw OperationException("Could not find key in specified table.");
+  } 
+  else { stack.push(table_obj->get(key)); }
 }
 
 

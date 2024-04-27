@@ -68,8 +68,12 @@ private:
   void handle_push(Message client_msg);
 
   void handle_set(Message client_msg);
+  /* handle_set() helper function that accesses table entry and performs the actual SET operation */
+  void set_table_value(Message client_msg, Table* table_obj);
 
   void handle_get(Message client_msg);
+  /* handle_get() helper function that accesses table entry and performs the actual GET operation */
+  void get_table_value(Message client_msg, Table* table_obj);
 
   /* Respond to client with OK Message */
   void write_ok();

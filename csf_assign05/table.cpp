@@ -39,6 +39,12 @@ bool Table::trylock()
 
 void Table::set( const std::string &key, const std::string &value )
 {
+  key_value_pairs[key] = value;
+}
+
+
+void Table::suggest_set( const std::string &key, const std::string &value )
+{
   proposed_pairs[key] = value;
 }
 

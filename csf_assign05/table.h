@@ -37,6 +37,7 @@ public:
   // Note: these functions should only be called while the
   // table's lock is held!
   void set( const std::string &key, const std::string &value );
+  void suggest_set( const std::string &key, const std::string &value );
   bool has_key( const std::string &key );
   std::string get( const std::string &key );
   void commit_changes();
