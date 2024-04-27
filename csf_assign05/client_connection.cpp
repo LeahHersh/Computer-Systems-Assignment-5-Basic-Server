@@ -39,12 +39,12 @@ void ClientConnection::chat_with_client() {
     if (n <= 0) { input_left = false; }
     else {
       try { decode(buf, client_msg); } 
-      catch (InvalidMessage ex) { manage_exception(ex, false); }
+      catch (InvalidMessage const& ex) { manage_exception(ex, false); }
       
       // If the Message is a login
       if (client_msg.get_message_type() == MessageType::LOGIN) {
         try { handle_login(first_valid_message); }
-        catch (OperationException ex) { manage_exception(ex, true); }
+        catch (OperationException const& ex) { manage_exception(ex, true); }
         continue;
         // If the Message isn't a login but is the first valid Message
       } else if (first_valid_message) {
@@ -148,8 +148,8 @@ void ClientConnection::call_response_function(Message client_msg) {
     }
   }
 
-  catch (CommException ex) {      manage_exception(ex, false); }
-  catch (std::runtime_error ex) { manage_exception(ex, true); }
+  catch (CommException const& ex) {      manage_exception(ex, false); }
+  catch (std::runtime_error const& ex) { manage_exception(ex, true); }
 }
 
 
@@ -246,7 +246,7 @@ void ClientConnection::handle_add() {
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
-  catch (std::invalid_argument ex) {
+  catch (std::invalid_argument const& ex) {
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -269,7 +269,7 @@ void ClientConnection::handle_sub() {
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
-  catch (std::invalid_argument ex) {
+  catch (std::invalid_argument const& ex) {
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -292,7 +292,7 @@ void ClientConnection::handle_mul() {
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
-  catch (std::invalid_argument ex) {
+  catch (std::invalid_argument const& ex) {
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -315,7 +315,7 @@ void ClientConnection::handle_div() {
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
-  catch (std::invalid_argument ex) {
+  catch (std::invalid_argument const& ex) {
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -325,8 +325,8 @@ void ClientConnection::handle_div() {
 
 
 void ClientConnection::handle_bye() {
-  free(this);
   write_ok();
+  free(this);
 }
 
 
@@ -347,16 +347,16 @@ void ClientConnection::handle_set(Message client_msg) {
   if (!in_transaction) {
     table_obj->lock();
     try { set_table_value(client_msg, table_obj); }
-    catch (OperationException ex) { throw OperationException(ex.what()); }
+    catch (OperationException const& ex) { throw OperationException(ex.what()); }
 
     table_obj->unlock();
     // During transactions
   } else {
     bool lock_successful = table_obj->trylock();
 
-    if (lock_successful = false) { throw FailedTransaction("Could not monopolize access to table."); }
+    if (lock_successful == false) { throw FailedTransaction("Could not monopolize access to table."); }
     try { set_table_value(client_msg, table_obj); }
-    catch (OperationException ex) { throw OperationException(ex.what()); }
+    catch (OperationException const& ex) { throw OperationException(ex.what()); }
   }
   write_ok();
 }
@@ -391,16 +391,16 @@ void ClientConnection::handle_get(Message client_msg) {
   if (!in_transaction) {
     table_obj->lock();
     try { get_table_value(client_msg, table_obj); }
-    catch (OperationException ex) { throw OperationException(ex.what()); }
+    catch (OperationException const& ex) { throw OperationException(ex.what()); }
 
     table_obj->unlock();
   // During transactions
   } else {
     bool lock_successful = table_obj->trylock();
-    if (lock_successful = false) { throw FailedTransaction("Could not monopolize access to table."); }
+    if (lock_successful == false) { throw FailedTransaction("Could not monopolize access to table."); }
     
     try { get_table_value(client_msg, table_obj); }
-    catch (OperationException ex) { throw OperationException(ex.what()); }
+    catch (OperationException const& ex) { throw OperationException(ex.what()); }
   }
   write_ok();
 }
