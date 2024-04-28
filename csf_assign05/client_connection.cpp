@@ -37,7 +37,10 @@ void ClientConnection::chat_with_client() {
     if (n <= 0) { loop_in_progress = false; }
     else {
       try { decode(buf, client_msg); } 
-      catch (InvalidMessage const& ex) { manage_exception(ex, false); }
+      catch (InvalidMessage const& ex) { 
+        manage_exception(ex, false);
+        continue; 
+      }
       
       // If the Message is a login
       if (client_msg.get_message_type() == MessageType::LOGIN) {
@@ -144,10 +147,10 @@ void ClientConnection::call_response_function(Message client_msg) {
     }
   }
 
-  catch (InvalidMessage const& ex) {     
+  catch (InvalidMessage const& ex) {   
+    loop_in_progress = false;  
     manage_exception(ex, false); 
-    loop_in_progress = false;
-    }
+  }
   catch (std::runtime_error const& ex) { manage_exception(ex, true); }
 }
 
@@ -329,8 +332,8 @@ void ClientConnection::handle_div() {
 
 
 void ClientConnection::handle_bye() {
-  write_ok();
   loop_in_progress = false;
+  write_ok();
 }
 
 
