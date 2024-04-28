@@ -17,6 +17,7 @@ private:
   ValueStack stack;
   std::unordered_set<Table*> locked_tables;
   bool in_transaction;
+  bool loop_in_progress;
 
   // copy constructor and assignment operator are prohibited
   ClientConnection( const ClientConnection & );
@@ -33,15 +34,14 @@ public:
 
 
 private:
-  /* Takes an exception and turns it into a message to send to the client, then kills the 
-  ClientConnection if the error is unrecoverable. */
+  /* Fails an ongoing transaction and turns an exception into a message sent to the client. */
   void manage_exception(std::runtime_error ex, bool recoverable);
 
   /* Rolls back changes in altered Tables and unlocks them. */
   void fail_transaction();
 
   /* Finds a message's type and calls the appropriate response function based on the type. */
-  void call_response_function(Message client_msg);
+  void call_response_function(Message client_msg, bool* loop_continues);
 
   void handle_begin();
 
@@ -59,7 +59,7 @@ private:
 
   void handle_div();
 
-  void handle_bye();
+  void handle_bye(bool* loop_continuing);
 
   void handle_login(bool* first_valid_message);
 

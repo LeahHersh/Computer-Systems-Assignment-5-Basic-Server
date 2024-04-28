@@ -12,7 +12,8 @@ using namespace MessageSerialization;
 ClientConnection::ClientConnection( Server *server, int client_fd )
   : m_server( server )
   , m_client_fd( client_fd )
-  , in_transaction(false)  {
+  , in_transaction(false)
+  , loop_in_progress(true)  {
   rio_readinitb( &m_fdbuf, m_client_fd );
 }
 
@@ -32,11 +33,11 @@ void ClientConnection::chat_with_client() {
   Message client_msg;
   char buf[client_msg.MAX_ENCODED_LEN];
 
-  while (input_left) {
+  while (loop_in_progress) {
     ssize_t n = rio_readlineb(&m_fdbuf, buf, sizeof(m_fdbuf));
 
     // If nothing is read from the client
-    if (n <= 0) { input_left = false; }
+    if (n <= 0) { loop_in_progress = false; }
     else {
       try { decode(buf, client_msg); } 
       catch (InvalidMessage const& ex) { manage_exception(ex, false); }
@@ -55,11 +56,9 @@ void ClientConnection::chat_with_client() {
         continue;
       }
 
-      call_response_function(client_msg);
+      call_response_function(client_msg, &loop_in_progress);
     }
   }
-  // End connection with client when no more input can be read
-  this->~ClientConnection();
 }
 
 
@@ -69,6 +68,10 @@ int ClientConnection::get_m_client_fd() {
 
 
 void ClientConnection::manage_exception (std::runtime_error ex, bool recoverable) {
+
+  // Fail ongoing transaction if necessary 
+  if (in_transaction) { fail_transaction(); }
+
   // Assign a MessageType to the server's response to the client
   MessageType response_type = (recoverable) ? MessageType::FAILED : MessageType::ERROR;
 
@@ -79,12 +82,6 @@ void ClientConnection::manage_exception (std::runtime_error ex, bool recoverable
 
   // Send the Message
   rio_writen(m_client_fd, encoded_response.data(), encoded_response.size());
-
-  // Fail ongoing transaction if necessary 
-  if (in_transaction) { fail_transaction(); }
-
-  // End the ClientConnection if necessary
-  if (response_type == MessageType::ERROR) { this->~ClientConnection(); }
 }
 
 
@@ -99,7 +96,7 @@ void ClientConnection::fail_transaction() {
 }
 
 
-void ClientConnection::call_response_function(Message client_msg) {
+void ClientConnection::call_response_function(Message client_msg, bool* loop_continuing) {
   MessageType response_type = client_msg.get_message_type();
   
   try {
@@ -134,7 +131,7 @@ void ClientConnection::call_response_function(Message client_msg) {
         handle_div();
         break;
       case MessageType::BYE:
-        handle_bye();
+        handle_bye(loop_continuing);
         break;
       case MessageType::PUSH:
         handle_push(client_msg);
@@ -149,7 +146,10 @@ void ClientConnection::call_response_function(Message client_msg) {
     }
   }
 
-  catch (InvalidMessage const& ex) {      manage_exception(ex, false); }
+  catch (InvalidMessage const& ex) {     
+    manage_exception(ex, false); 
+    *loop_continuing = false;
+    }
   catch (std::runtime_error const& ex) { manage_exception(ex, true); }
 }
 
@@ -330,9 +330,9 @@ void ClientConnection::handle_div() {
 }
 
 
-void ClientConnection::handle_bye() {
+void ClientConnection::handle_bye(bool* loop_continuing) {
   write_ok();
-  this->~ClientConnection();
+  *loop_continuing = false;
 }
 
 
