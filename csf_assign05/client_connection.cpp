@@ -89,13 +89,13 @@ void ClientConnection::manage_exception (std::runtime_error ex, bool recoverable
 
 
 void ClientConnection::fail_transaction() {
-  in_transaction = false;
   for (auto it = locked_tables.begin(); it != locked_tables.end(); it++) {
     (*it)->rollback_changes();
     (*it)->unlock();
   }
 
   locked_tables.clear();
+  in_transaction = false;
 }
 
 
@@ -149,7 +149,7 @@ void ClientConnection::call_response_function(Message client_msg) {
     }
   }
 
-  catch (CommException const& ex) {      manage_exception(ex, false); }
+  catch (InvalidMessage const& ex) {      manage_exception(ex, false); }
   catch (std::runtime_error const& ex) { manage_exception(ex, true); }
 }
 
@@ -205,8 +205,8 @@ void ClientConnection::handle_commit() {
     (*it)->commit_changes();
     (*it)->unlock();
   }
-  locked_tables.clear();
   in_transaction = false;
+  locked_tables.clear();
 
   write_ok();
 }
@@ -219,8 +219,10 @@ void ClientConnection::handle_pop() {
 
 
 void ClientConnection::handle_top() {
+  std::string top_value = "";
   // Will throw OperationException if stack is empty
-  std::string top_value = stack.get_top();
+  try { top_value = stack.get_top(); }
+  catch (OperationException const& ex) { throw OperationException("\"Stack is empty.\""); }
 
   // Create DATA Message
   Message data_msg(MessageType::DATA);
