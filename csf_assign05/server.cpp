@@ -58,18 +58,10 @@ void Server::server_loop() {
 
 void *Server::client_worker( void *arg )
 {
-  // Assuming that your ClientConnection class has a member function
-  // called chat_with_client(), your implementation might look something
-  // like this:
-/*
-  std::unique_ptr<ClientConnection> client( static_cast<ClientConnection *>( arg ) );
-  client->chat_with_client();
-  return nullptr;
-*/
-
   std::unique_ptr<ClientConnection> client( static_cast<ClientConnection *>( arg ) );
 
-  client->chat_with_client();
+  try { client->chat_with_client(); }
+  catch (CommException ex) { std::cerr << ex.what(); }
 
   close(client->get_m_client_fd());
   free(arg);
