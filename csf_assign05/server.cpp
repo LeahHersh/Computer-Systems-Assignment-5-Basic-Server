@@ -63,7 +63,6 @@ void *Server::client_worker( void *arg )
   try { client->chat_with_client(); }
   catch (CommException ex) { std::cerr << ex.what(); }
 
-  close(client->get_m_client_fd());
   free(arg);
   return nullptr;
 }
