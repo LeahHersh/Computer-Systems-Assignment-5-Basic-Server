@@ -365,11 +365,6 @@ void ClientConnection::handle_set(Message client_msg) {
 void ClientConnection::set_table_value(Message client_msg, Table* table_obj) {
   std::string key = client_msg.get_arg(1);
 
-    // If the table does not have the key specified by the client, throw an exception
-    if (!table_obj->has_key(key)) {
-      table_obj->unlock();
-      throw OperationException("Could not find key in specified table.");
-    }
     // Otherwise, set the new value to the table (as a suggestion during transactions), and pop it
     if (!in_transaction) {
       table_obj->set(key, stack.get_top());
