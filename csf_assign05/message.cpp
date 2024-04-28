@@ -155,4 +155,6 @@ bool Message::is_valid_identifier(std::string arg) const {
         return false;
       }
     }
+
+    return true;
 }

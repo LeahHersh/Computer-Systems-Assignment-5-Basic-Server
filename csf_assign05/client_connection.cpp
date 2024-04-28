@@ -14,8 +14,10 @@ ClientConnection::ClientConnection( Server *server, int client_fd )
   , m_client_fd( client_fd )
   , in_transaction(false)
   , loop_in_progress(true)  {
+    
   rio_readinitb( &m_fdbuf, m_client_fd );
 }
+
 
 ClientConnection::~ClientConnection() {
 
