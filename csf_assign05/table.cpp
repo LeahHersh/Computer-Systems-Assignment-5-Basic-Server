@@ -31,9 +31,9 @@ bool Table::trylock()
   if (mutex_is_locked) {
     return false;
   }
-
-  mutex_is_locked = true;
   pthread_mutex_lock(&mutex);
+  mutex_is_locked = true;
+  
   return true;
 }
 
