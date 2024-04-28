@@ -121,8 +121,8 @@ bool Message::is_valid() const
 
     if (!is_valid_identifier(m_args[0])) { return false; }
 
-    // And the second argument is an identifier
-    if (msg_type == MessageType::SET  || msg_type == MessageType::GET) {
+    // And there are two arguments, with the second being an identifier
+    if (msg_type == MessageType::SET || msg_type == MessageType::GET) {
       if (!is_valid_identifier(m_args[1])) { return false; }
     }
   }

@@ -208,8 +208,8 @@ void ClientConnection::handle_commit() {
     (*it)->commit_changes();
     (*it)->unlock();
   }
-  in_transaction = false;
   locked_tables.clear();
+  in_transaction = false;
 
   write_ok();
 }
@@ -367,12 +367,15 @@ void ClientConnection::handle_set(Message client_msg) {
     catch (OperationException const& ex) { throw OperationException(ex.what()); }
 
     table_obj->unlock();
+
     // During transactions
   } else {
-    if (locked_tables.find(table_obj) == locked_tables.end()) { throw FailedTransaction("Table is locked."); }
-    bool lock_successful = table_obj->trylock();
-
-    if (lock_successful == false) { throw FailedTransaction("Could not monopolize access to table."); }
+    // If the lock isn't held yet
+    if (locked_tables.find(table_obj) == locked_tables.end()) {
+      bool lock_successful = table_obj->trylock();
+      if (!lock_successful) { throw FailedTransaction("Could not gain access to table."); }
+    }
+    // If the lock is successfully held
     try { set_table_value(client_msg, table_obj); }
     catch (OperationException const& ex) { throw OperationException(ex.what()); }
   }
@@ -407,11 +410,15 @@ void ClientConnection::handle_get(Message client_msg) {
     catch (OperationException const& ex) { throw OperationException(ex.what()); }
 
     table_obj->unlock();
+
   // During transactions
   } else {
-    bool lock_successful = table_obj->trylock();
-    if (lock_successful == false) { throw FailedTransaction("Could not monopolize access to table."); }
-    
+    // If the lock isn't held yet
+    if (locked_tables.find(table_obj) == locked_tables.end()) {
+      bool lock_successful = table_obj->trylock();
+      if (!lock_successful) { throw FailedTransaction("Could not gain access to table."); }
+    }
+    // If the lock is successfully held
     try { get_table_value(client_msg, table_obj); }
     catch (OperationException const& ex) { throw OperationException(ex.what()); }
   }
