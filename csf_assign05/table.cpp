@@ -28,13 +28,7 @@ void Table::unlock()
 
 bool Table::trylock()
 {
-  if (mutex_is_locked) {
-    return false;
-  }
-  pthread_mutex_lock(&mutex);
-  mutex_is_locked = true;
-  
-  return true;
+  return pthread_mutex_trylock(&mutex) == 0;
 }
 
 void Table::set( const std::string &key, const std::string &value )

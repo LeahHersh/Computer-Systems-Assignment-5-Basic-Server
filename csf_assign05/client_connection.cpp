@@ -89,6 +89,7 @@ void ClientConnection::manage_exception (std::runtime_error ex, bool recoverable
 
 
 void ClientConnection::fail_transaction() {
+  in_transaction = false;
   for (auto it = locked_tables.begin(); it != locked_tables.end(); it++) {
     (*it)->rollback_changes();
     (*it)->unlock();
@@ -352,6 +353,7 @@ void ClientConnection::handle_set(Message client_msg) {
     table_obj->unlock();
     // During transactions
   } else {
+    if (locked_tables.find(table_obj) == locked_tables.end()) { throw FailedTransaction("Table is locked."); }
     bool lock_successful = table_obj->trylock();
 
     if (lock_successful == false) { throw FailedTransaction("Could not monopolize access to table."); }
