@@ -33,7 +33,7 @@ void ClientConnection::chat_with_client() {
   char buf[client_msg.MAX_ENCODED_LEN];
 
   while (input_left) {
-    ssize_t n = Rio_readlineb(&m_fdbuf, buf, sizeof(m_fdbuf));
+    ssize_t n = rio_readlineb(&m_fdbuf, buf, sizeof(m_fdbuf));
 
     // If nothing is read from the client
     if (n <= 0) { input_left = false; }
@@ -43,7 +43,7 @@ void ClientConnection::chat_with_client() {
       
       // If the Message is a login
       if (client_msg.get_message_type() == MessageType::LOGIN) {
-        try { handle_login(first_valid_message); }
+        try { handle_login(&first_valid_message); }
         catch (OperationException const& ex) { manage_exception(ex, true); }
         continue;
         // If the Message isn't a login but is the first valid Message
@@ -171,13 +171,13 @@ void ClientConnection::handle_create(Message client_msg) {
 }
 
 
-void ClientConnection::handle_login(bool& first_valid_message) {
+void ClientConnection::handle_login(bool* first_valid_message) {
 
   if(!first_valid_message) {
     throw OperationException("You are already logged in.");
   }
 
-  first_valid_message = false;
+  *first_valid_message = false;
   write_ok();
 }
 
