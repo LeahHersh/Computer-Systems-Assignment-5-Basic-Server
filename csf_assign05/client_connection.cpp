@@ -56,6 +56,7 @@ void ClientConnection::chat_with_client() {
       call_response_function(client_msg);
     }
   }
+  close(m_client_fd);
 }
 
 
