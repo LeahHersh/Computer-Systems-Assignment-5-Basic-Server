@@ -16,8 +16,8 @@ Table::~Table()
 
 void Table::lock()
 {
-  mutex_is_locked = true;
   pthread_mutex_lock(&mutex);
+  mutex_is_locked = true;
 }
 
 void Table::unlock()
