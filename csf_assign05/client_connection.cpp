@@ -255,7 +255,7 @@ void ClientConnection::handle_add() {
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
-    stack.push(std::to_string(right_operand));
+    if (right_popped) { stack.push(std::to_string(right_operand)); }
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -280,7 +280,7 @@ void ClientConnection::handle_sub() {
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
-    stack.push(std::to_string(right_operand));
+    if (right_popped) { stack.push(std::to_string(right_operand)); }
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -305,7 +305,7 @@ void ClientConnection::handle_mul() {
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
-    stack.push(std::to_string(right_operand));
+    if (right_popped) { stack.push(std::to_string(right_operand)); }
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -330,7 +330,7 @@ void ClientConnection::handle_div() {
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
-    stack.push(std::to_string(right_operand));
+    if (right_popped) { stack.push(std::to_string(right_operand)); }
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
