@@ -12,7 +12,7 @@ Server::Server()
 : server_fd(0)
 {
   // Mutex is used to lock a server while tables are being created
-  pthread_mutex_init(mutex, NULL);
+  pthread_mutex_init(mutex, nullptr);
 }
 
 Server::~Server()
