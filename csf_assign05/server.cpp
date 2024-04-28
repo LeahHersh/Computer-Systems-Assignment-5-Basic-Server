@@ -62,8 +62,6 @@ void *Server::client_worker( void *arg )
 
   try { client->chat_with_client(); }
   catch (CommException ex) { std::cerr << ex.what(); }
-
-  free(arg);
   return nullptr;
 }
 
@@ -75,15 +73,15 @@ void Server::log_error( const std::string &what )
 
 
 void Server::lock()
-{
-  mutex_is_locked = true;
+{ 
   pthread_mutex_lock(&mutex);
+  mutex_is_locked = true;
 }
 
 
 void Server::unlock() {
-  pthread_mutex_unlock(&mutex);
   mutex_is_locked = false;
+  pthread_mutex_unlock(&mutex);
 }
 
 
