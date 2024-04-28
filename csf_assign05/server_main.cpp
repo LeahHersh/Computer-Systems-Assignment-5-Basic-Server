@@ -8,8 +8,9 @@ int main(int argc, char **argv)
     std::cerr << "Usage: ./server <port>\n";
     return 1;
   }
-
+  std::cerr << "Passed args\n";
   Server server;
+  std::cerr << "Point 1\n";
 
   try {
     std::cerr << "Hit constructor\n";
