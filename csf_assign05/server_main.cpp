@@ -3,6 +3,7 @@
 
 int main(int argc, char **argv)
 {
+  std::cerr << "Hit start\n";
   if ( argc != 2 ) {
     std::cerr << "Usage: ./server <port>\n";
     return 1;
