@@ -60,9 +60,9 @@ void ClientConnection::chat_with_client() {
 
       call_response_function(client_msg);
     }
-    // End connection with client when no more input can be read
-    free(this);
   }
+  // End connection with client when no more input can be read
+  free(this);
 }
 
 
