@@ -13,7 +13,7 @@ private:
 
   std::unordered_map<std::string, Table*> table_names;
 
-  pthread_mutex_t* mutex;
+  pthread_mutex_t mutex;
 
   bool mutex_is_locked;
 

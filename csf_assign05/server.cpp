@@ -13,14 +13,14 @@ Server::Server()
 {
   // Mutex is used to lock a server while tables are being created
   std::cerr << "before init\n";
-  pthread_mutex_init(mutex, nullptr);
+  pthread_mutex_init(&mutex, NULL);
   std::cerr << "after init\n";
 }
 
 Server::~Server()
 {
   close(server_fd);
-  pthread_mutex_destroy(mutex);
+  pthread_mutex_destroy(&mutex);
 }
 
 void Server::listen( const std::string &port )
@@ -88,12 +88,12 @@ void Server::log_error( const std::string &what )
 void Server::lock()
 {
   mutex_is_locked = true;
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(&mutex);
 }
 
 
 void Server::unlock() {
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(&mutex);
   mutex_is_locked = false;
 }
 
