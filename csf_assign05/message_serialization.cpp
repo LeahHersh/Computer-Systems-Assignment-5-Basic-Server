@@ -64,16 +64,16 @@ void MessageSerialization::encode( const Message &msg, std::string &encoded_msg 
   encoded_msg += "\n";
 
   // Check if the message is too long
-  check_message_size(encoded_msg);
+  try { check_message_size(encoded_msg); }
+  catch (InvalidMessage const& ex) { throw InvalidMessage(ex.what()); }
 }
 
 void MessageSerialization::decode( const std::string &encoded_msg_, Message &msg )
 {
-  check_message_size(encoded_msg_);
+  try { check_message_size(encoded_msg_); }
+  catch (InvalidMessage const& ex) { throw InvalidMessage(ex.what()); }
 
-  if (encoded_msg_.back() != '\n') {
-    throw InvalidMessage("Encoded message is missing a newline.");
-  }
+  if (encoded_msg_.back() != '\n') { throw InvalidMessage("Encoded message is missing a newline."); }
 
   // Get the string containing the encoded message's type
   std::stringstream ss(encoded_msg_);
