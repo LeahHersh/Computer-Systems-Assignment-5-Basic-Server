@@ -31,13 +31,16 @@ void ClientConnection::chat_with_client() {
   bool first_valid_message = true;
   Message client_msg;
   char buf[client_msg.MAX_ENCODED_LEN];
+  rio_writen(m_client_fd, "start\n", 200);
 
   while (input_left) {
+    rio_writen(m_client_fd, "loop reached\n", 200);
     ssize_t n = rio_readlineb(&m_fdbuf, buf, sizeof(m_fdbuf));
 
     // If nothing is read from the client
     if (n <= 0) { input_left = false; rio_writen(m_client_fd, "reached n<=0\n", 200); }
     else {
+      rio_writen(m_client_fd, "reached else\n", 200);
       try { decode(buf, client_msg); } 
       catch (InvalidMessage const& ex) { manage_exception(ex, false); }
       
@@ -54,7 +57,7 @@ void ClientConnection::chat_with_client() {
         rio_writen(m_client_fd, encoded_error.data(), encoded_error.size());
         continue;
       }
-      
+
       call_response_function(client_msg);
     }
     // End connection with client when no more input can be read
