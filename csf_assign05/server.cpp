@@ -23,7 +23,7 @@ Server::~Server()
 
 void Server::listen( const std::string &port )
 {
-  int server_fd = open_listenfd(port.data());
+  server_fd = open_listenfd(port.data());
   if (server_fd < 0) { throw CommException("Failed to create server socket"); }
 
 }
