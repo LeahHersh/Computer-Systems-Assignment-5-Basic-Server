@@ -59,7 +59,7 @@ void ClientConnection::chat_with_client() {
     }
   }
   // End connection with client when no more input can be read
-  free(this);
+  this->~ClientConnection();
 }
 
 
@@ -84,7 +84,7 @@ void ClientConnection::manage_exception (std::runtime_error ex, bool recoverable
   if (in_transaction) { fail_transaction(); }
 
   // End the ClientConnection if necessary
-  if (response_type == MessageType::ERROR) { free(this); }
+  if (response_type == MessageType::ERROR) { this->~ClientConnection(); }
 }
 
 
@@ -326,7 +326,7 @@ void ClientConnection::handle_div() {
 
 void ClientConnection::handle_bye() {
   write_ok();
-  free(this);
+  this->~ClientConnection();
 }
 
 
