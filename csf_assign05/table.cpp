@@ -22,8 +22,8 @@ void Table::lock()
 
 void Table::unlock()
 {
-  pthread_mutex_unlock(&mutex);
   mutex_is_locked = false;
+  pthread_mutex_unlock(&mutex); 
 }
 
 bool Table::trylock()
