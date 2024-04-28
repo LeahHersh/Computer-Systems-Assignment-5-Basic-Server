@@ -41,7 +41,7 @@ private:
   void fail_transaction();
 
   /* Finds a message's type and calls the appropriate response function based on the type. */
-  void call_response_function(Message client_msg, bool* loop_continues);
+  void call_response_function(Message client_msg);
 
   void handle_begin();
 
@@ -59,7 +59,7 @@ private:
 
   void handle_div();
 
-  void handle_bye(bool* loop_continuing);
+  void handle_bye();
 
   void handle_login(bool* first_valid_message);
 

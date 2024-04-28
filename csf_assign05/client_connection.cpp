@@ -22,13 +22,10 @@ ClientConnection::~ClientConnection() {
   if (in_transaction) {
     fail_transaction();
   }
-
-  close(m_client_fd);
 }
 
 
 void ClientConnection::chat_with_client() {
-  bool input_left = true;
   bool first_valid_message = true;
   Message client_msg;
   char buf[client_msg.MAX_ENCODED_LEN];
@@ -56,7 +53,7 @@ void ClientConnection::chat_with_client() {
         continue;
       }
 
-      call_response_function(client_msg, &loop_in_progress);
+      call_response_function(client_msg);
     }
   }
 }
@@ -96,7 +93,7 @@ void ClientConnection::fail_transaction() {
 }
 
 
-void ClientConnection::call_response_function(Message client_msg, bool* loop_continuing) {
+void ClientConnection::call_response_function(Message client_msg) {
   MessageType response_type = client_msg.get_message_type();
   
   try {
@@ -131,7 +128,7 @@ void ClientConnection::call_response_function(Message client_msg, bool* loop_con
         handle_div();
         break;
       case MessageType::BYE:
-        handle_bye(loop_continuing);
+        handle_bye();
         break;
       case MessageType::PUSH:
         handle_push(client_msg);
@@ -148,7 +145,7 @@ void ClientConnection::call_response_function(Message client_msg, bool* loop_con
 
   catch (InvalidMessage const& ex) {     
     manage_exception(ex, false); 
-    *loop_continuing = false;
+    loop_in_progress = false;
     }
   catch (std::runtime_error const& ex) { manage_exception(ex, true); }
 }
@@ -330,9 +327,9 @@ void ClientConnection::handle_div() {
 }
 
 
-void ClientConnection::handle_bye(bool* loop_continuing) {
+void ClientConnection::handle_bye() {
   write_ok();
-  *loop_continuing = false;
+  loop_in_progress = false;
 }
 
 
