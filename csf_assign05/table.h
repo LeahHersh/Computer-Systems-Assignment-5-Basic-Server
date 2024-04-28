@@ -11,7 +11,6 @@ private:
 
   pthread_mutex_t mutex;
 
-  bool mutex_is_locked;
 
   /* String keys are mapped to string values. */
   std::unordered_map<std::string, std::string> key_value_pairs;
@@ -28,7 +27,6 @@ public:
   ~Table();
 
   std::string get_name() const { return m_name; }
-  bool get_is_locked() const { return mutex_is_locked; }
 
   void lock();
   void unlock();

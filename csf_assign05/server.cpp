@@ -44,15 +44,6 @@ void Server::server_loop() {
     }
     
   }
-
-  // Note that your code to start a worker thread for a newly-connected
-  // client might look something like this:
-/*
-  ClientConnection *client = new ClientConnection( this, client_fd );
-  pthread_t thr_id;
-  if ( pthread_create( &thr_id, nullptr, client_worker, client ) != 0 )
-    log_error( "Could not create client thread" );
-*/
 }
 
 

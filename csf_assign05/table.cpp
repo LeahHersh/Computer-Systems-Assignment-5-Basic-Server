@@ -4,7 +4,7 @@
 #include "guard.h"
 
 Table::Table( const std::string &name )
-  : m_name( name ), mutex_is_locked( false ), key_value_pairs(), proposed_pairs() {
+  : m_name( name ), key_value_pairs(), proposed_pairs() {
 
     pthread_mutex_init(&mutex, NULL);
   }
@@ -17,12 +17,10 @@ Table::~Table()
 void Table::lock()
 {
   pthread_mutex_lock(&mutex);
-  mutex_is_locked = true;
 }
 
 void Table::unlock()
 {
-  mutex_is_locked = false;
   pthread_mutex_unlock(&mutex); 
 }
 
