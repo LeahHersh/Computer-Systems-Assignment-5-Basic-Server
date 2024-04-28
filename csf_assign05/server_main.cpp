@@ -11,8 +11,11 @@ int main(int argc, char **argv)
   Server server;
 
   try {
+    std::cerr << "Hit constructor\n";
     server.listen( argv[1] );
+    std::cerr << "Hit listen\n";
     server.server_loop();
+    std::cerr << "Hit loop\n";
   } catch ( std::runtime_error &ex ) {
     server.log_error( "Fatal error starting server" );
     return 1;
