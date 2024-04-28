@@ -12,9 +12,7 @@ Server::Server()
 : server_fd(0)
 {
   // Mutex is used to lock a server while tables are being created
-  std::cerr << "before init\n";
   pthread_mutex_init(&mutex, NULL);
-  std::cerr << "after init\n";
 }
 
 Server::~Server()
