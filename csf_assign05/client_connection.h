@@ -16,6 +16,7 @@ private:
   rio_t m_fdbuf;
   ValueStack stack;
   std::unordered_set<Table*> locked_tables;
+
   bool in_transaction;
   bool loop_in_progress;
 

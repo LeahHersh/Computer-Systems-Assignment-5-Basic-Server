@@ -55,6 +55,7 @@ void ClientConnection::chat_with_client() {
         std::string encoded_error;
         encode(error_msg, encoded_error);
         rio_writen(m_client_fd, encoded_error.data(), encoded_error.size());
+        loop_in_progress = false;
         continue;
       }
 
@@ -218,7 +219,7 @@ void ClientConnection::handle_commit() {
 void ClientConnection::handle_pop() {
   // Will throw OperationException if stack is empty
   try { stack.pop(); }
-  catch (OperationException const& ex) { throw OperationException("\"Stack is empty.\""); }
+  catch (OperationException const& ex) { throw OperationException("Stack is empty."); }
 
   write_ok();
 }
@@ -228,7 +229,7 @@ void ClientConnection::handle_top() {
   std::string top_value = "";
   // Will throw OperationException if stack is empty
   try { top_value = stack.get_top(); }
-  catch (OperationException const& ex) { throw OperationException("\"Stack is empty.\""); }
+  catch (OperationException const& ex) { throw OperationException("Stack is empty."); }
 
   // Create DATA Message
   Message data_msg(MessageType::DATA);
@@ -355,6 +356,8 @@ void ClientConnection::handle_push(Message client_msg) {
 
 void ClientConnection::handle_set(Message client_msg) {
 
+  if (stack.get_size() < 1) { throw OperationException("No value on stack."); }
+
   std::string table_name = client_msg.get_arg(0);
   Table* table_obj = m_server->find_table(table_name);
   
@@ -363,15 +366,11 @@ void ClientConnection::handle_set(Message client_msg) {
   // During atomic operations where it is confirmed that the table exists
   if (!in_transaction) {
     table_obj->lock();
-    try { set_table_value(client_msg, table_obj); }
-    catch (OperationException const& ex) { 
-      table_obj->unlock();
-      throw OperationException(ex.what()); 
-    }
-
+    set_table_value(client_msg, table_obj);
+    table_obj->commit_changes();
     table_obj->unlock();
 
-    // During transactions
+  // During transactions
   } else {
     // If the lock isn't held yet
     if (locked_tables.find(table_obj) == locked_tables.end()) {
@@ -379,8 +378,7 @@ void ClientConnection::handle_set(Message client_msg) {
       if (!lock_successful) { throw FailedTransaction("Could not gain access to table."); }
     }
     // If the lock is being held
-    try { set_table_value(client_msg, table_obj); }
-    catch (OperationException const& ex) { throw OperationException(ex.what()); }
+    set_table_value(client_msg, table_obj);
   }
   write_ok();
 }
@@ -389,13 +387,8 @@ void ClientConnection::handle_set(Message client_msg) {
 void ClientConnection::set_table_value(Message client_msg, Table* table_obj) {
   std::string key = client_msg.get_arg(1);
 
-    // Otherwise, set the new value to the table (as a suggestion during transactions), and pop it
-    if (!in_transaction) {
-      table_obj->set(key, stack.get_top());
-    } 
-    else {
-      table_obj->suggest_set(key, stack.get_top());
-    }
+    // Set the new value to the table (as a suggestion during transactions), and pop it
+    table_obj->set(key, stack.get_top());
     stack.pop(); 
 }
 
