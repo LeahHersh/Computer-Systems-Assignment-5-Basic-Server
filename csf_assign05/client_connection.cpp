@@ -219,7 +219,7 @@ void ClientConnection::handle_commit() {
 void ClientConnection::handle_pop() {
   // Will throw OperationException if stack is empty
   try { stack.pop(); }
-  catch (OperationException const& ex) { throw OperationException("Stack is empty."); }
+  catch (OperationException const& ex) { throw OperationException(ex.what()); }
 
   write_ok();
 }
@@ -229,7 +229,7 @@ void ClientConnection::handle_top() {
   std::string top_value = "";
   // Will throw OperationException if stack is empty
   try { top_value = stack.get_top(); }
-  catch (OperationException const& ex) { throw OperationException("Stack is empty."); }
+  catch (OperationException const& ex) { throw OperationException(ex.what()); }
 
   // Create DATA Message
   Message data_msg(MessageType::DATA);
@@ -372,10 +372,11 @@ void ClientConnection::handle_set(Message client_msg) {
 
   // During transactions
   } else {
-    // If the lock isn't held yet
+    // If the lock isn't held yet, try to acquire it.
     if (locked_tables.find(table_obj) == locked_tables.end()) {
       bool lock_successful = table_obj->trylock();
       if (!lock_successful) { throw FailedTransaction("Could not gain access to table."); }
+      else { locked_tables.insert(table_obj); }
     }
     // If the lock is being held
     set_table_value(client_msg, table_obj);
@@ -415,6 +416,7 @@ void ClientConnection::handle_get(Message client_msg) {
     if (locked_tables.find(table_obj) == locked_tables.end()) {
       bool lock_successful = table_obj->trylock();
       if (!lock_successful) { throw FailedTransaction("Could not gain access to table."); }
+      else { locked_tables.insert(table_obj); }
     }
     // If the lock is being held
     try { get_table_value(client_msg, table_obj); }
