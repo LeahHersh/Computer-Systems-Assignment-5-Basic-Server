@@ -9,7 +9,7 @@ class Table {
 private:
   std::string m_name;
 
-  pthread_mutex_t* mutex;
+  pthread_mutex_t mutex;
 
   bool mutex_is_locked;
 

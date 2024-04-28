@@ -6,23 +6,23 @@
 Table::Table( const std::string &name )
   : m_name( name ), mutex_is_locked( false ), key_value_pairs(), proposed_pairs() {
 
-    pthread_mutex_init(mutex, NULL);
+    pthread_mutex_init(&mutex, NULL);
   }
 
 Table::~Table()
 {
-  pthread_mutex_destroy(mutex);
+  pthread_mutex_destroy(&mutex);
 }
 
 void Table::lock()
 {
   mutex_is_locked = true;
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(&mutex);
 }
 
 void Table::unlock()
 {
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(&mutex);
   mutex_is_locked = false;
 }
 
@@ -33,7 +33,7 @@ bool Table::trylock()
   }
 
   mutex_is_locked = true;
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(&mutex);
   return true;
 }
 
