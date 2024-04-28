@@ -214,7 +214,10 @@ void ClientConnection::handle_commit() {
 
 void ClientConnection::handle_pop() {
   // Will throw OperationException if stack is empty
-  stack.pop();
+  try { stack.pop(); }
+  catch (OperationException const& ex) { throw OperationException("\"Stack is empty.\""); }
+
+  write_ok();
 }
 
 
