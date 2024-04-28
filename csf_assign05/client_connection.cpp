@@ -240,20 +240,22 @@ void ClientConnection::handle_top() {
 
 
 void ClientConnection::handle_add() {
-  if (stack.get_size() < 2) {
-    throw OperationException("There are not enough operands to add with.");
-  }
+  if (stack.get_size() < 2) { throw OperationException("There are not enough operands to add with."); }
   
   int right_operand;
   int left_operand;
+  // Bool used to tell if the right operand was popped before the left operand threw an error
+  bool right_popped = false;
   try {
     right_operand = std::stoi(stack.get_top());
     stack.pop();
+    right_popped = true;
 
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
+    stack.push(std::to_string(right_operand));
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -263,20 +265,22 @@ void ClientConnection::handle_add() {
 
 
 void ClientConnection::handle_sub() {
-  if (stack.get_size() < 2) {
-    throw OperationException("There are not enough operands to subtract with.");
-  }
+  if (stack.get_size() < 2) { throw OperationException("There are not enough operands to subtract with."); }
   
   int right_operand;
   int left_operand;
+  // Bool used to tell if the right operand was popped before the left operand threw an error
+  bool right_popped = false;
   try {
     right_operand = std::stoi(stack.get_top());
     stack.pop();
+    right_popped = true;
 
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
+    stack.push(std::to_string(right_operand));
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -286,20 +290,22 @@ void ClientConnection::handle_sub() {
 
 
 void ClientConnection::handle_mul() {
-  if (stack.get_size() < 2) {
-    throw OperationException("There are not enough operands to multiply with.");
-  }
+  if (stack.get_size() < 2) { throw OperationException("There are not enough operands to multiply with."); }
   
   int right_operand;
   int left_operand;
+  // Bool used to tell if the right operand was popped before the left operand threw an error
+  bool right_popped = false;
   try {
     right_operand = std::stoi(stack.get_top());
     stack.pop();
+    right_popped = true;
 
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
+    stack.push(std::to_string(right_operand));
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 
@@ -309,20 +315,22 @@ void ClientConnection::handle_mul() {
 
 
 void ClientConnection::handle_div() {
-  if (stack.get_size() < 2) {
-    throw OperationException("There are not enough operands to divide with.");
-  }
+  if (stack.get_size() < 2) { throw OperationException("There are not enough operands to divide with."); }
   
   int right_operand;
   int left_operand;
+  // Bool used to tell if the right operand was popped before the left operand threw an error
+  bool right_popped = false;
   try {
     right_operand = std::stoi(stack.get_top());
     stack.pop();
+    right_popped = true;
 
     left_operand = std::stoi(stack.get_top());
     stack.pop();
   }
   catch (std::invalid_argument const& ex) {
+    stack.push(std::to_string(right_operand));
     throw OperationException("Value on stack could not be converted to an integer.");
   }
 

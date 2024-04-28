@@ -119,20 +119,11 @@ bool Message::is_valid() const
   else if (msg_type == MessageType::LOGIN || msg_type == MessageType::CREATE ||
            msg_type == MessageType::SET   || msg_type == MessageType::GET) {
 
-    // and the first character is not a letter
-    if (!((m_args[0].at(0) >= 'A' && m_args[0].at(0) <= 'Z') || (m_args[0].at(0) >= 'a' && m_args[0].at(0) <= 'z'))) {
-      return false;
-    }
+    if (!is_valid_identifier(m_args[0])) { return false; }
 
-    // or the rest of the identifier contains an invalid character
-    int identifier_length = m_args[0].length();
-    for (int i = 1; i < identifier_length; i++) {
-
-      if (!((m_args[0].at(i) >= 'A' && m_args[0].at(i) <= 'Z') || (m_args[0].at(i) >= 'a' && m_args[0].at(i) <= 'z') ||
-            (m_args[0].at(i) >= '0' && m_args[0].at(i) <= '9') || m_args[0].at(i) == '_')) {
-
-        return false;
-      }
+    // And the second argument is an identifier
+    if (msg_type == MessageType::SET  || msg_type == MessageType::GET) {
+      if (!is_valid_identifier(m_args[1])) { return false; }
     }
   }
 
@@ -140,11 +131,28 @@ bool Message::is_valid() const
   else if (msg_type == MessageType::PUSH) {
 
     // and only contains white space
-    if (std::all_of(m_args[0].begin(),m_args[0].end(),isspace)) {
-      return false;
-    }
+    if (std::all_of(m_args[0].begin(),m_args[0].end(),isspace)) { return false; }
   }
 
   // Otherwise
   return true;
+}
+
+
+bool Message::is_valid_identifier(std::string arg) const {
+  // and the first character is not a letter
+    if (!((arg.at(0) >= 'A' && arg.at(0) <= 'Z') || (arg.at(0) >= 'a' && arg.at(0) <= 'z'))) {
+      return false;
+    }
+
+    // or the rest of the identifier contains an invalid character
+    int identifier_length = arg.length();
+    for (int i = 1; i < identifier_length; i++) {
+
+      if (!((arg.at(i) >= 'A' && arg.at(i) <= 'Z') || (arg.at(i) >= 'a' && arg.at(i) <= 'z') ||
+            (arg.at(i) >= '0' && arg.at(i) <= '9') ||  arg.at(i) == '_')) {
+
+        return false;
+      }
+    }
 }
