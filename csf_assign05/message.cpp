@@ -56,16 +56,12 @@ void Message::set_message_type(MessageType message_type)
 
 std::string Message::get_username() const
 {
-   /* if (!(get_message_type() == MessageType::LOGIN && is_valid())) {
-    return "";
-  }  */
-
-  return m_args[0]; //TODO: correct?
+  return m_args[0];
 }
 
 std::string Message::get_table() const
 {
-  return m_args[0]; //TODO: correct?
+  return m_args[0];
 }
 
 std::string Message::get_key() const

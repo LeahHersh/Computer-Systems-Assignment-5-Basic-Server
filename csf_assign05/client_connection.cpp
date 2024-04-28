@@ -51,7 +51,7 @@ void ClientConnection::chat_with_client() {
         continue;
         // If the Message isn't a login but is the first valid Message
       } else if (first_valid_message) {
-        Message error_msg (MessageType::FAILED, { "Please log in first." });
+        Message error_msg (MessageType::ERROR, { "Please log in first." });
         std::string encoded_error;
         encode(error_msg, encoded_error);
         rio_writen(m_client_fd, encoded_error.data(), encoded_error.size());
@@ -364,7 +364,10 @@ void ClientConnection::handle_set(Message client_msg) {
   if (!in_transaction) {
     table_obj->lock();
     try { set_table_value(client_msg, table_obj); }
-    catch (OperationException const& ex) { throw OperationException(ex.what()); }
+    catch (OperationException const& ex) { 
+      table_obj->unlock();
+      throw OperationException(ex.what()); 
+    }
 
     table_obj->unlock();
 
@@ -375,7 +378,7 @@ void ClientConnection::handle_set(Message client_msg) {
       bool lock_successful = table_obj->trylock();
       if (!lock_successful) { throw FailedTransaction("Could not gain access to table."); }
     }
-    // If the lock is successfully held
+    // If the lock is being held
     try { set_table_value(client_msg, table_obj); }
     catch (OperationException const& ex) { throw OperationException(ex.what()); }
   }
@@ -407,8 +410,10 @@ void ClientConnection::handle_get(Message client_msg) {
   if (!in_transaction) {
     table_obj->lock();
     try { get_table_value(client_msg, table_obj); }
-    catch (OperationException const& ex) { throw OperationException(ex.what()); }
-
+    catch (OperationException const& ex) { 
+      table_obj->unlock();
+      throw OperationException(ex.what()); 
+    }
     table_obj->unlock();
 
   // During transactions
@@ -418,7 +423,7 @@ void ClientConnection::handle_get(Message client_msg) {
       bool lock_successful = table_obj->trylock();
       if (!lock_successful) { throw FailedTransaction("Could not gain access to table."); }
     }
-    // If the lock is successfully held
+    // If the lock is being held
     try { get_table_value(client_msg, table_obj); }
     catch (OperationException const& ex) { throw OperationException(ex.what()); }
   }
