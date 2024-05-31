@@ -51,8 +51,7 @@ void *Server::client_worker( void *arg )
 {
   std::unique_ptr<ClientConnection> client( static_cast<ClientConnection *>( arg ) );
 
-  try { client->chat_with_client(); }
-  catch (CommException ex) { std::cerr << ex.what(); }
+  client->chat_with_client();
   return nullptr;
 }
 
